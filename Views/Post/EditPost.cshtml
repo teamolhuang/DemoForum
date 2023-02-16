@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "編輯文章";
+}
+
+@model DemoForum.Models.EditPostViewModel
+
+<!DOCTYPE html>
+
+<html lang="zh-tw">
+<head>
+    <title>編輯文章</title>
+</head>
+<body>
+<form asp-controller="Post" asp-action="EditPost" method="post">
+    <h2 legend>編輯文章</h2>
+    
+    <hr/>
+    
+    <div class="title">
+        <h5 style="display: inline">標題</h5> @Html.ValidationMessageFor(m => m.PostTitle)<br/>
+        <input type="text" asp-for="PostTitle" size="140" placeholder="輸入標題 ..."/> 
+    </div>
+    
+    <hr/>
+    
+    <div class="content">
+        <h5 style="display: inline">內容</h5> @Html.ValidationMessageFor(m => m.PostContent)<br/>
+        <textarea asp-for="PostContent" cols="140" rows="22" placeholder="輸入發文內容 ..."></textarea> 
+    </div>
+    
+    <hr/>
+    
+    <div class="submit">
+        <button type="submit">送出</button>
+    </div>
+</form>
+</body>
+</html>

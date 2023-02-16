@@ -1,0 +1,110 @@
+:root {
+  --color-bg-header: #232323;
+  --color-bg-body: #202020;
+  --color-bg-input: #171717;
+  --color-button-bg: #606060;
+  --color-button-bg-hover: #808080;
+  --color-text: #BBBBBB;
+}
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+/* Colors */
+/* change navbar theme in Layout.cshtml */
+
+.bg-dark {
+  background-color: var(--color-bg-header) !important; /* overrides bootstrap dark */
+}
+
+body {
+  margin-bottom: 60px;
+  background-color: var(--color-bg-body);
+  color: var(--color-text);
+}
+
+button {
+  background-color: var(--color-button-bg);
+  color: var(--color-text);
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: var(--color-button-bg-hover);
+}
+
+input[type="text"], textarea {
+  background-color: var(--color-bg-input);
+  color: var(--color-text);
+}
+
+/* Shapes */
+button, input, textarea {
+  padding: 5px;
+  box-shadow: none;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+}
+
+button {
+  border-radius: 15px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Error Message */
+
+.field-validation-error { 
+  display: inline-block;
+  box-shadow: 0 0 0 3px #EFC5CC; /* box-shadow instead of border, to avoid other elements being moved */
+  border-radius: 5px;
+  color: #F04A66;
+  background-color: #EFC5CC;
+  position: relative;
+  top: -5px;
+  left: 5px;
+  vertical-align: top;
+  animation: fade-in 0.5s ease-out
+  , shake 0.4s
+  , fade-out 0.5s ease 3s forwards; /* ease for animation-delay, forwards for keep animation state */
+}
+
+/* Animations */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  99% { opacity: 0; }
+  100% { opacity: 0; display: none; }
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px); }
+  10% { transform: translate(-1px, -2px); }
+  20% { transform: translate(-3px, 0px); }
+  30% { transform: translate(3px, 2px); }
+  40% { transform: translate(1px, -1px); }
+  50% { transform: translate(-1px, 2px); }
+  60% { transform: translate(-3px, 1px); }
+  70% { transform: translate(3px, 1px); }
+  80% { transform: translate(-1px, -1px); }
+  90% { transform: translate(1px, 2px); }
+  100% { transform: translate(1px, -2px); }
+}
