@@ -11,7 +11,7 @@ public class PostRepository : IPostRepository
     {
         _context = context;
     }
-    
+
     public Post Create(Post obj)
     {
         obj.CreatedTime = DateTime.Now;

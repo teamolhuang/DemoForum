@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace DemoForum.Models.Entities;
 
-namespace DemoForum.Models.Entities;
-
-public partial class Post
+public class Post
 {
     public int Id { get; set; }
 

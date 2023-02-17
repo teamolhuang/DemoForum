@@ -1,5 +1,4 @@
 ﻿@using Microsoft.IdentityModel.Tokens
-@using System.Globalization
 @model HomeViewModel
 
 @{
@@ -9,9 +8,9 @@
 
 <div class="text-center">
     <h3 class="display-4">論壇 Demo 展示</h3>
-    
+
     <hr/>
-    
+
     <div class="post-list" style="text-align: left">
         @if (posts.IsNullOrEmpty())
         {

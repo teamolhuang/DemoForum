@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace DemoForum.Models.Entities;
 
-public partial class ForumContext : DbContext
+public class ForumContext : DbContext
 {
     public ForumContext()
     {
@@ -18,7 +16,9 @@ public partial class ForumContext : DbContext
     public virtual DbSet<Post> Posts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DemoForum");
+    {
+        optionsBuilder.UseSqlServer("Name=ConnectionStrings:DemoForum");
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,5 +38,8 @@ public partial class ForumContext : DbContext
         OnModelCreatingPartial(modelBuilder);
     }
 
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    private void OnModelCreatingPartial(ModelBuilder modelBuilder)
+    {
+        throw new NotImplementedException();
+    }
 }
