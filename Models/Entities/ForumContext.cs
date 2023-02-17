@@ -40,6 +40,5 @@ public class ForumContext : DbContext
 
     private void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
-        throw new NotImplementedException();
     }
 }
