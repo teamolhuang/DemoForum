@@ -4,5 +4,5 @@ namespace DemoForum.Repositories;
 
 public interface IPostRepository : ICrudRepository<Post, int>
 {
-    
+    IEnumerable<Post> ReadLatest(int rows);
 }

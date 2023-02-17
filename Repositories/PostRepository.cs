@@ -14,6 +14,7 @@ public class PostRepository : IPostRepository
     
     public Post Create(Post obj)
     {
+        obj.CreatedTime = DateTime.Now;
         EntityEntry<Post> saved = _context.Add(obj);
         _context.SaveChanges();
 
@@ -23,6 +24,14 @@ public class PostRepository : IPostRepository
     public Post Read(int key)
     {
         throw new NotImplementedException();
+    }
+
+    public IEnumerable<Post> ReadLatest(int rows)
+    {
+        return _context.Posts
+            .OrderByDescending(p => p.CreatedTime)
+            .Take(rows)
+            .ToList();
     }
 
     public Post Update(int key, Post obj)

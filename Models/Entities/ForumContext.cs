@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace DemoForum.Models.Entities;
 
@@ -29,6 +31,7 @@ public partial class ForumContext : DbContext
             entity.ToTable("Post");
 
             entity.Property(e => e.Content).HasMaxLength(2000);
+            entity.Property(e => e.CreatedTime).HasColumnType("datetime");
             entity.Property(e => e.Title).HasMaxLength(20);
         });
 
