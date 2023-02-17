@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using AspNetCoreHero.ToastNotification.Abstractions;
-using Microsoft.AspNetCore.Mvc;
 using DemoForum.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DemoForum.Controllers;
 
