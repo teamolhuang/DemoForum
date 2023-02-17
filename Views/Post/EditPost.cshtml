@@ -1,18 +1,20 @@
-﻿@{
-    ViewData["Title"] = "編輯文章";
-}
-
+﻿@using DemoForum.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model DemoForum.Models.EditPostViewModel
+
+@{
+    ViewData["Title"] = $"{PostModeStrings.GetChinese(Model.PostMode)}文章";
+}
 
 <!DOCTYPE html>
 
 <html lang="zh-tw">
 <head>
-    <title>編輯文章</title>
+    <title>@ViewData["Title"]</title>
 </head>
 <body>
 <form asp-controller="Post" asp-action="EditPost" method="post">
-    <h2 legend>編輯文章</h2>
+    <h2 legend>@ViewData["Title"]</h2>
     
     <hr/>
     
@@ -29,6 +31,9 @@
     </div>
     
     <hr/>
+    
+    <!-- To keep PostMode the same value when a postback happens --> 
+    @Html.HiddenFor(model => model.PostMode)
     
     <div class="submit">
         <button type="submit">送出</button>
