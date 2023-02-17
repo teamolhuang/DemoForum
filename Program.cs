@@ -11,7 +11,7 @@ builder.Services.AddControllersWithViews();
 // Add dbcontext
 // This also reads connection strings from dotnet user-secret automatically,
 // thus no need for actually configuring it into the project
-// builder.Services.AddDbContext<ForumContext>();
+builder.Services.AddDbContext<ForumContext>();
 
 // Adds toast notification
 builder.Services.AddNotyf(config =>
