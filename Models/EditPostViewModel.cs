@@ -5,6 +5,8 @@ namespace DemoForum.Models;
 
 public class EditPostViewModel
 {
+    public int EntityId { get; set; }
+    
     [StringLength(20, ErrorMessage = "標題長度應為 1 ~ 20 個字！")]
     [Required(ErrorMessage = "未填入標題！")]
     public string? PostTitle { get; set; }
