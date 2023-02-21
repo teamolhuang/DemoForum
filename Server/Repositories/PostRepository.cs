@@ -26,14 +26,6 @@ public class PostRepository : IPostRepository
         throw new NotImplementedException();
     }
 
-    public IEnumerable<Post> ReadLatest(int rows)
-    {
-        return _context.Posts
-            .OrderByDescending(p => p.CreatedTime)
-            .Take(rows)
-            .ToList();
-    }
-
     public Post Update(int key, Post obj)
     {
         throw new NotImplementedException();
@@ -42,5 +34,13 @@ public class PostRepository : IPostRepository
     public Post Delete(int key)
     {
         throw new NotImplementedException();
+    }
+
+    public IEnumerable<Post> ReadLatest(int rows)
+    {
+        return _context.Posts
+            .OrderByDescending(p => p.CreatedTime)
+            .Take(rows)
+            .ToList();
     }
 }
