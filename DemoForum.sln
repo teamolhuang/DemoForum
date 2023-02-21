@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoForum", "DemoForum.csproj", "{3B178AA6-119A-455D-8644-FB6232EDDC67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoForum", "Server\DemoForum.csproj", "{3B178AA6-119A-455D-8644-FB6232EDDC67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoForumTests", "UnitTests\DemoForumTests.csproj", "{89D10F7A-1754-45AD-9C2C-176C13515EE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +14,9 @@ Global
 		{3B178AA6-119A-455D-8644-FB6232EDDC67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B178AA6-119A-455D-8644-FB6232EDDC67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B178AA6-119A-455D-8644-FB6232EDDC67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89D10F7A-1754-45AD-9C2C-176C13515EE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89D10F7A-1754-45AD-9C2C-176C13515EE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89D10F7A-1754-45AD-9C2C-176C13515EE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89D10F7A-1754-45AD-9C2C-176C13515EE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
