@@ -41,6 +41,6 @@ public class PostRepository : IPostRepository
         return _context.Posts
             .OrderByDescending(p => p.CreatedTime)
             .Take(rows)
-            .ToList();
+            .AsEnumerable();
     }
 }

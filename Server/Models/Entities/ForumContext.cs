@@ -17,7 +17,8 @@ public class ForumContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer("Name=ConnectionStrings:DemoForum");
+        if (!optionsBuilder.IsConfigured)
+            optionsBuilder.UseSqlServer("Name=ConnectionStrings:DemoForum");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
