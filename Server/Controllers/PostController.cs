@@ -43,7 +43,7 @@ public class PostController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogError($"EditPost failed, mode {editPost.PostMode}, {editPost}");
+            _logger.LogError($"GetEditEditor failed, mode {editPost.PostMode}, {editPost}");
             _logger.LogError(e.ToString());
             _notyfService.Error("發文失敗，請通知網站管理員 ...");
             _notyfService.Error(HttpUtility.JavaScriptStringEncode(e.Message));
@@ -53,13 +53,13 @@ public class PostController : Controller
     }
 
     [HttpGet]
-    public IActionResult EditPost()
+    public IActionResult GetEditEditor()
     {
         return EditorView(PostMode.Edit);
     }
 
     [HttpGet]
-    public IActionResult NewPost()
+    public IActionResult GetNewEditor()
     {
         return EditorView(PostMode.New);
     }
