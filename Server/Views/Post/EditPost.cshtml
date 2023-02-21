@@ -3,7 +3,7 @@
 @model EditPostViewModel
 
 @{
-    ViewData["Title"] = $"{PostModeStrings.GetChinese(Model.PostMode)}文章";
+    ViewData["Title"] = $"{Model.PostMode.GetChinese()}文章";
 }
 
 <!DOCTYPE html>

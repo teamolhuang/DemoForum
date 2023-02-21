@@ -6,9 +6,9 @@ public enum PostMode
     New
 }
 
-internal static class PostModeStrings
+public static class PostModeStrings
 {
-    internal static string GetChinese(this PostMode? mode)
+    public static string GetChinese(this PostMode mode)
     {
         return mode switch
         {
