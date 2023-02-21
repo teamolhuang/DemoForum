@@ -36,7 +36,7 @@ public class HomeControllerTests
 
         // Assert
         Index_Assert_MockRepoCalled(mockRepo);
-        
+
         HomeViewModel viewModel = Index_Arrange_IsHomeViewModel(actual);
         Index_Assert_PostPreviewProperlyFormatted(viewModel, posts);
     }
@@ -80,7 +80,7 @@ public class HomeControllerTests
         Assert.False(json.Contains(MockTitleLong));
         Assert.True(json.Contains(MockTitleLong.ShortenToPreview()));
         Assert.True(json.Contains(MockTitleShort));
-        
+
         Assert.False(json.Contains(MockContentLong));
         Assert.True(json.Contains(MockContentLong.ShortenToPreview(ContentPreviewLength)));
         Assert.True(json.Contains(MockContentShort));
@@ -112,7 +112,7 @@ public class HomeControllerTests
     {
         return new Mock<IPostRepository>();
     }
-    
+
     private static List<Post> Index_Arrange_GetListOfPosts(string mockTitle1, string mockTitle2)
     {
         return new List<Post>

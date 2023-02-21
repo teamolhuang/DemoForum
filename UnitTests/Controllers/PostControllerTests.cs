@@ -1,5 +1,4 @@
-﻿using System;
-using AspNetCoreHero.ToastNotification.Abstractions;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Controllers;
 using DemoForum.Enums;
 using DemoForum.Models;
@@ -86,7 +85,8 @@ public class PostControllerTests
         Assert_ViewModel_PostMode(editPostViewModel, PostMode.New);
     }
 
-    private static PostController Arrange_Controller(Mock<IPostRepository> mockRepo, Mock<INotyfService> mockNotyf, Mock<ILogger<PostController>> mockLogger)
+    private static PostController Arrange_Controller(Mock<IPostRepository> mockRepo, Mock<INotyfService> mockNotyf,
+        Mock<ILogger<PostController>> mockLogger)
     {
         PostController postController = new(mockRepo.Object, mockNotyf.Object, mockLogger.Object);
         return postController;
@@ -143,9 +143,9 @@ public class PostControllerTests
 
     private void Assert_PostRepository_CreatedOnce(Mock<IPostRepository> mockRepo, Post mockEntity)
     {
-        mockRepo.Verify(m => 
-            m.Create(It.Is<Post>(p => 
-                p.Title == mockEntity.Title && p.Content == mockEntity.Content))
+        mockRepo.Verify(m =>
+                m.Create(It.Is<Post>(p =>
+                    p.Title == mockEntity.Title && p.Content == mockEntity.Content))
             , Times.Once);
     }
 
@@ -154,7 +154,7 @@ public class PostControllerTests
         notyf.Verify(m => m.Success(PostSuccessMessage, default), Times.Once);
     }
 
-    
+
     private void Assert_PostRepository_NeverInteracted(Mock<IPostRepository> mockRepo)
     {
         mockRepo.VerifyNoOtherCalls();
@@ -171,8 +171,8 @@ public class PostControllerTests
     {
         return controller.EditPost(viewModel);
     }
-    
-    
+
+
     private void Assert_ViewModel_PostMode(EditPostViewModel editPostViewModel, PostMode postMode)
     {
         Assert.AreEqual(postMode, editPostViewModel.PostMode);
@@ -191,6 +191,4 @@ public class PostControllerTests
     {
         return Arrange_Controller(Arrange_Repo(), Arrange_Notyf(), Arrange_Logger());
     }
-
-
 }
