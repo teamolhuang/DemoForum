@@ -17,8 +17,8 @@ public class PostController : Controller
     public PostController(IPostRepository postRepository, INotyfService notyfService, ILogger<PostController> logger)
     {
         _postRepository = postRepository;
-        _logger = logger;
         _notyfService = notyfService;
+        _logger = logger;
     }
 
     [HttpPost]
