@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Globalization;
+using System.Web;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Enums;
 using DemoForum.Models;
@@ -84,5 +85,19 @@ public class PostController : Controller
     private IActionResult EditorView(EditPostViewModel viewModel)
     {
         return View("EditPost", viewModel);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Read(int id)
+    {
+        Post? post = await _postRepository.Read(id);
+        PostViewModel postViewModel = new()
+        {
+            Title = post?.Title,
+            Content = post?.Content,
+            CreatedTime = post?.CreatedTime.ToString(CultureInfo.CurrentCulture)
+        };
+        
+        return View(postViewModel);
     }
 }

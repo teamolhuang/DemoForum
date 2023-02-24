@@ -4,7 +4,10 @@
     --color-bg-input: #171717;
     --color-button-bg: #606060;
     --color-button-bg-hover: #808080;
-    --color-text: #BBBBBB;
+    --color-text: #AAAAAA;
+    --color-text-title: #CCCCCC;
+    --color-link: #CCCCCC;
+    --color-link-hover: #EEEEEE;
 
     --color-notification-input-error: #F04A66;
     --color-notification-input-error-bg: #EFC5CC;
@@ -53,6 +56,22 @@ button:hover {
 input[type="text"], textarea {
     background-color: var(--color-bg-input);
     color: var(--color-text);
+}
+
+.post-title {
+    color: var(--color-text-title);
+}
+
+a {
+    color: var(--color-link);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+    text-underline-position: under;
+    text-underline-offset: 0.15em;
 }
 
 /* Shapes */

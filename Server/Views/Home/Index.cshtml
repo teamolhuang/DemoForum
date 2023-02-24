@@ -24,7 +24,7 @@
                 // 標題
                 // 預覽
                 <p class="post-number">#@post.Id - @post.CreatedTime</p>
-                <h3 style="position: relative; top: -3px">@post.Title</h3>
+                <h2 style="position: relative; top: -5px;"><a class="post-title">@Html.ActionLink(post.Title ?? "無題", "Read", "Post", new {post.Id})</a></h2>
                 <h6>@post.Content</h6>
                 <hr/>
             }

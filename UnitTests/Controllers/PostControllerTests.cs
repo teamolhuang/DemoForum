@@ -1,5 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Globalization;
+using System.Threading.Tasks;
 using AspNetCoreHero.ToastNotification.Abstractions;
+using AspNetCoreHero.ToastNotification.Helpers;
 using DemoForum.Controllers;
 using DemoForum.Enums;
 using DemoForum.Models;
@@ -84,6 +87,65 @@ public class PostControllerTests
         Assert_IsView_EditPost(actual);
         EditPostViewModel editPostViewModel = Assert_IsViewModel_EditPost(actual);
         Assert_ViewModel_PostMode(editPostViewModel, PostMode.New);
+    }
+
+    [Test]
+    [TestCase(1, "標題", "內容")]
+    public async Task Read_WillQueryForPost_AndReturnCorrectPostViewModel(int id, string title, string content)
+    {
+        // Arrange
+        Post mockPost = Arrange_Post(title, content);
+        Mock<IPostRepository> mockRepo = Arrange_ReadFromRepo_WillReturnPost(id, mockPost);
+        PostController controller = Arrange_Controller(mockRepo, Arrange_Notyf(), Arrange_Logger());
+
+        // Act
+        IActionResult actual = await controller.Read(id);
+
+        // Assert
+        Assert_Read_RepoCalledOnce(id, mockRepo);
+        PostViewModel viewModel = Assert_Read_IsPostViewModel(actual);
+        Assert_Read_ResultIsSameAsEntity(title, content, viewModel, mockPost);
+    }
+
+    private static void Assert_Read_ResultIsSameAsEntity(string title, string content, PostViewModel viewModel,
+        Post mockPost)
+    {
+        Assert.AreEqual(title, viewModel.Title);
+        Assert.AreEqual(content, viewModel.Content);
+        Assert.AreEqual(mockPost.CreatedTime.ToString(CultureInfo.CurrentCulture), viewModel.CreatedTime);
+    }
+
+    private static PostViewModel Assert_Read_IsPostViewModel(IActionResult actual)
+    {
+        Assert.IsAssignableFrom<ViewResult>(actual);
+        ViewResult viewResult = (ViewResult)actual;
+        Assert.IsNotNull(viewResult.Model);
+        Assert.IsAssignableFrom<PostViewModel>(viewResult.Model);
+        PostViewModel viewModel = (PostViewModel)viewResult.Model!;
+        return viewModel;
+    }
+
+    private Post Arrange_Post(string title, string content)
+    {
+        return new Post
+        {
+            Title = title,
+            Content = content,
+            CreatedTime = DateTime.Now
+        };
+    }
+
+    private static void Assert_Read_RepoCalledOnce(int id, Mock<IPostRepository> mockRepo)
+    {
+        mockRepo.Verify(m => m.Read(id), Times.Once);
+    }
+
+    private static Mock<IPostRepository> Arrange_ReadFromRepo_WillReturnPost(int id, Post post)
+    {
+        Mock<IPostRepository> mockRepo = Arrange_Repo();
+        mockRepo.Setup(m => m.Read(id)).ReturnsAsync(post);
+
+        return mockRepo;
     }
 
     private static PostController Arrange_Controller(Mock<IPostRepository> mockRepo, Mock<INotyfService> mockNotyf,

@@ -1,0 +1,18 @@
+﻿@using System.Globalization
+@model PostViewModel
+
+<!DOCTYPE html>
+
+<html lang="zh-tw">
+<head>
+    <title>閱讀文章</title>
+</head>
+<body>
+<div>
+    <h2 class="post-title" legend>@Model.Title</h2>
+    <p class="post-number" style="display: inline">@Model.CreatedTime</p>
+    <hr/>
+    @Model.Content
+</div>
+</body>
+</html>
