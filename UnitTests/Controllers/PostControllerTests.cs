@@ -91,6 +91,7 @@ public class PostControllerTests
 
     [Test]
     [TestCase(1, "標題", "內容")]
+    [TestCase(3, "標題2", "內容2")]
     public async Task Read_WillQueryForPost_AndReturnCorrectPostViewModel(int id, string title, string content)
     {
         // Arrange
@@ -105,6 +106,31 @@ public class PostControllerTests
         Assert_Read_RepoCalledOnce(id, mockRepo);
         PostViewModel viewModel = Assert_Read_IsPostViewModel(actual);
         Assert_Read_ResultIsSameAsEntity(title, content, viewModel, mockPost);
+    }
+
+    [Test]
+    [TestCase(1)]
+    [TestCase(69)]
+    [TestCase(100)]
+    public async Task Read_WillQueryForPost_AndReturnDefaultModelIfNotFound(int id)
+    {
+        // Arrange
+        Mock<IPostRepository> mockRepo = Arrange_ReadFromRepo_WillReturnPost(id, null);
+        PostController controller = Arrange_Controller(mockRepo, Arrange_Notyf(), Arrange_Logger());
+        
+        // Act
+        IActionResult actual = await controller.Read(id);
+        
+        // Assert
+        Assert_Read_RepoCalledOnce(id, mockRepo);
+        Assert_Read_ViewModelIsNull(actual);
+    }
+
+    private static void Assert_Read_ViewModelIsNull(IActionResult actual)
+    {
+        Assert.IsAssignableFrom<ViewResult>(actual);
+        ViewResult viewResult = (ViewResult)actual;
+        Assert.IsNull(viewResult.Model);
     }
 
     private static void Assert_Read_ResultIsSameAsEntity(string title, string content, PostViewModel viewModel,
@@ -140,7 +166,7 @@ public class PostControllerTests
         mockRepo.Verify(m => m.Read(id), Times.Once);
     }
 
-    private static Mock<IPostRepository> Arrange_ReadFromRepo_WillReturnPost(int id, Post post)
+    private static Mock<IPostRepository> Arrange_ReadFromRepo_WillReturnPost(int id, Post? post)
     {
         Mock<IPostRepository> mockRepo = Arrange_Repo();
         mockRepo.Setup(m => m.Read(id)).ReturnsAsync(post);

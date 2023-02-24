@@ -91,11 +91,18 @@ public class PostController : Controller
     public async Task<IActionResult> Read(int id)
     {
         Post? post = await _postRepository.Read(id);
+
+        if (post == null)
+        {
+            _notyfService.Error("點擊的文章似乎已被刪除 ...");
+            return View();
+        }
+        
         PostViewModel postViewModel = new()
         {
-            Title = post?.Title,
-            Content = post?.Content,
-            CreatedTime = post?.CreatedTime.ToString(CultureInfo.CurrentCulture)
+            Title = post.Title,
+            Content = post.Content,
+            CreatedTime = post.CreatedTime.ToString(CultureInfo.CurrentCulture)
         };
         
         return View(postViewModel);

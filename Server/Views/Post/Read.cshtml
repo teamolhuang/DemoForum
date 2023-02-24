@@ -1,5 +1,4 @@
-﻿@using System.Globalization
-@model PostViewModel
+﻿@model PostViewModel?
 
 <!DOCTYPE html>
 
@@ -9,10 +8,12 @@
 </head>
 <body>
 <div>
-    <h2 class="post-title" legend>@Model.Title</h2>
-    <p class="post-number" style="display: inline">@Model.CreatedTime</p>
+    <h6><a>@Html.ActionLink("回首頁", "Index", "Home", null)</a></h6>
     <hr/>
-    @Model.Content
+    <h2 class="post-title" legend>@(Model?.Title ?? "無題")</h2>
+    <p class="post-number" style="display: inline">@(Model?.CreatedTime ?? "-")</p>
+    <hr/>
+    @(Model?.Content ?? "無內容，文章可能已被刪除 ...")
 </div>
 </body>
 </html>
