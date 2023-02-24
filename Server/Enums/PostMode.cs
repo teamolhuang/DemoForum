@@ -12,8 +12,8 @@ public static class PostModeStrings
     {
         return mode switch
         {
-            PostMode.New => "發表",
-            _ => "編輯"
+            PostMode.Edit => "編輯",
+            _ => "發表"
         };
     }
 }
