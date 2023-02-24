@@ -22,9 +22,9 @@ public class PostRepository : IPostRepository
         return saved.Entity;
     }
 
-    public Task<Post> Read(int key)
+    public async Task<Post?> Read(int key)
     {
-        throw new NotImplementedException();
+        return await _context.Posts.FirstOrDefaultAsync(p => p.Id == key);
     }
 
     public Task<Post> Update(int key, Post obj)

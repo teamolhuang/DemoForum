@@ -14,7 +14,7 @@ public interface ICrudRepository<T, in TKey>
     /// </summary>
     /// <param name="key">key</param>
     /// <returns>entity</returns>
-    Task<T> Read(TKey key);
+    Task<T?> Read(TKey key);
 
     /// <summary>
     ///     Updates an entity by key and input object.
