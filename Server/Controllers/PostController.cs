@@ -22,7 +22,7 @@ public class PostController : Controller
     }
 
     [HttpPost]
-    public IActionResult EditPost(EditPostViewModel editPost)
+    public async Task<IActionResult> EditPost(EditPostViewModel editPost)
     {
         if (!ModelState.IsValid)
             return EditorView(editPost);
@@ -35,10 +35,17 @@ public class PostController : Controller
 
         try
         {
-            if (editPost.PostMode == PostMode.New)
-                _postRepository.Create(entity);
-            if (editPost.PostMode == PostMode.Edit)
-                _postRepository.Update(editPost.EntityId, entity);
+            switch (editPost.PostMode)
+            {
+                case PostMode.New:
+                default:
+                    await _postRepository.Create(entity);
+                    break;
+                case PostMode.Edit:
+                    await _postRepository.Update(editPost.EntityId, entity);
+                    break;
+            }
+
             _notyfService.Success("發文成功！");
         }
         catch (Exception e)

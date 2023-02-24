@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 using AspNetCoreHero.ToastNotification.Helpers;
 using DemoForum.Controllers;
 using DemoForum.Models;
@@ -24,7 +25,7 @@ public class HomeControllerTests
     private const int ContentPreviewLength = 40;
 
     [Test]
-    public void Index_WillGet100LatestPosts_AndReturnHomeViewWithPosts()
+    public async Task Index_WillGet100LatestPosts_AndReturnHomeViewWithPosts()
     {
         // Arrange
         List<Post> posts = Index_Arrange_GetListOfPosts(MockTitleLong, MockTitleShort);
@@ -32,7 +33,7 @@ public class HomeControllerTests
         Mock<IPostRepository> mockRepo = Index_Arrange_MockRepo(posts);
 
         // Act
-        IActionResult actual = Index_Act(mockRepo);
+        IActionResult actual = await Index_Act(mockRepo);
 
         // Assert
         Index_Assert_MockRepoCalled(mockRepo);
@@ -42,13 +43,13 @@ public class HomeControllerTests
     }
 
     [Test]
-    public void Index_WillGetNoPosts_AndReturnHomeViewWithMessages()
+    public async Task Index_WillGetNoPosts_AndReturnHomeViewWithMessages()
     {
         // Arrange
         Mock<IPostRepository> mockRepo = Index_Arrange_MockRepoEmpty();
 
         // Act
-        IActionResult actual = Index_Act(mockRepo);
+        IActionResult actual = await Index_Act(mockRepo);
 
         // Assert
         Index_Assert_MockRepoCalled(mockRepo);
@@ -62,10 +63,10 @@ public class HomeControllerTests
         mockRepo.Verify(m => m.ReadLatest(100), Times.Once);
     }
 
-    private static IActionResult Index_Act(Mock<IPostRepository> mockRepo)
+    private static async Task<IActionResult> Index_Act(Mock<IPostRepository> mockRepo)
     {
         HomeController home = new(mockRepo.Object);
-        IActionResult actual = home.Index();
+        IActionResult actual = await home.Index();
         return actual;
     }
 
@@ -104,7 +105,7 @@ public class HomeControllerTests
     private static Mock<IPostRepository> Index_Arrange_MockRepo(List<Post> posts)
     {
         Mock<IPostRepository> mockRepo = new();
-        mockRepo.Setup(m => m.ReadLatest(100)).Returns(posts);
+        mockRepo.Setup(m => m.ReadLatest(100)).ReturnsAsync(posts);
         return mockRepo;
     }
 

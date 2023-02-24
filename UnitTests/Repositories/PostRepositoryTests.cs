@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DemoForum.Models.Entities;
 using DemoForum.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,7 @@ public class PostRepositoryTests
     }
 
     [Test]
-    public void Create_WillSaveInputIntoDb_AndReturnSavedEntity()
+    public async Task Create_WillSaveInputIntoDb_AndReturnSavedEntity()
     {
         // Arrange
         PostRepository repo = new(_forumContext!);
@@ -41,7 +42,7 @@ public class PostRepositoryTests
         Arrange_CheckDbEmpty();
 
         // Act
-        Post actual = repo.Create(post);
+        Post actual = await repo.Create(post);
 
         // Assert
         Assert.AreEqual(post, actual);
@@ -52,7 +53,7 @@ public class PostRepositoryTests
     [TestCase(10)]
     [TestCase(50)]
     [TestCase(100)]
-    public void ReadLatest(int rows)
+    public async Task ReadLatest(int rows)
     {
         // Arrange
         PostRepository repo = new(_forumContext!);
@@ -60,7 +61,7 @@ public class PostRepositoryTests
         Arrange_PopulatePosts(rows);
 
         // Act
-        IEnumerable<Post> posts = repo.ReadLatest(rows);
+        IEnumerable<Post> posts = await repo.ReadLatest(rows);
 
         // Assert
         Assert_DbHasCorrectNumberOfData(rows);

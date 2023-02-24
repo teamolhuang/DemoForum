@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using DemoForum.Models;
+using DemoForum.Models.Entities;
 using DemoForum.Repositories;
 using DemoForum.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,12 @@ public class HomeController : Controller
         _postRepository = postRepository;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        IEnumerable<Post> posts = await _postRepository.ReadLatest(100);
         HomeViewModel viewModel = new()
         {
-            Posts = _postRepository.ReadLatest(100)
-                .Select(p => new PostPreviewViewModel
+            Posts = posts.Select(p => new PostPreviewViewModel
                 {
                     Id = p.Id.ToString().PadLeft(7, '0'),
                     Title = p.Title.ShortenToPreviewDefault(),

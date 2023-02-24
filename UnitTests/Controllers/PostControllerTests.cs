@@ -1,4 +1,5 @@
-﻿using AspNetCoreHero.ToastNotification.Abstractions;
+﻿using System.Threading.Tasks;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Controllers;
 using DemoForum.Enums;
 using DemoForum.Models;
@@ -18,7 +19,7 @@ public class PostControllerTests
     private const string PostSuccessMessage = "發文成功！";
 
     [Test]
-    public void EditPostWithModel_WillCheckEditIsCorrect_AndCreateToDBAndRedirectToIndex()
+    public async Task EditPostWithModel_WillCheckEditIsCorrect_AndCreateToDBAndRedirectToIndex()
     {
         // Arrange
         Mock<IPostRepository> mockRepo = Arrange_Repo();
@@ -30,7 +31,7 @@ public class PostControllerTests
         Post mockEntity = Arrange_Post_FromMockViewModel(mockModel);
 
         // Act
-        IActionResult actual = Act_EditPost_Post(postController, mockModel);
+        IActionResult actual = await Act_EditPost_Post(postController, mockModel);
 
         // Assert
         Assert_Notyf_Success(mockNotyf);
@@ -39,7 +40,7 @@ public class PostControllerTests
     }
 
     [Test]
-    public void EditPostWithModel_WillCheckEditIsInvalid_AndPostBack()
+    public async Task EditPostWithModel_WillCheckEditIsInvalid_AndPostBack()
     {
         // Arrange
         Mock<IPostRepository> mockRepo = Arrange_Repo();
@@ -48,7 +49,7 @@ public class PostControllerTests
         controller.ModelState.AddModelError("test", "test");
 
         // Act
-        IActionResult actual = Act_EditPost_Post(controller, viewModel);
+        IActionResult actual = await Act_EditPost_Post(controller, viewModel);
 
         // Assert
         Assert_IsView_EditPost(actual);
@@ -167,9 +168,9 @@ public class PostControllerTests
         Assert.AreEqual("EditPost", viewResult.ViewName!);
     }
 
-    private static IActionResult Act_EditPost_Post(PostController controller, EditPostViewModel viewModel)
+    private static async Task<IActionResult> Act_EditPost_Post(PostController controller, EditPostViewModel viewModel)
     {
-        return controller.EditPost(viewModel);
+        return await controller.EditPost(viewModel);
     }
 
 
