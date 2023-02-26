@@ -5,7 +5,7 @@ namespace DemoForum.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private ForumContext _forumContext;
+    private readonly ForumContext _forumContext;
 
     public UserRepository(ForumContext forumContext)
     {
