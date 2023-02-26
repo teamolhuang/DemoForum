@@ -47,7 +47,7 @@ public class HomeControllerTests
     public async Task Index_WillGetNoPosts_AndReturnHomeViewWithMessages()
     {
         // Arrange
-        Mock<IPostRepository> mockRepo = Index_Arrange_MockRepoEmpty();
+        Mock<IPostRepository> mockRepo = Index_Arrange_MockPostRepoEmpty();
 
         // Act
         IActionResult actual = await Index_Act(mockRepo);
@@ -57,6 +57,27 @@ public class HomeControllerTests
 
         HomeViewModel viewModel = Index_Arrange_IsHomeViewModel(actual);
         Index_Assert_HasNoPostPreview(viewModel);
+    }
+
+    [Test]
+    public void RedirectToIndex_WillReturnIndex()
+    {
+        // Arrange
+        HomeController homeController = new(Index_Arrange_MockPostRepoEmpty().Object, Arrange_MockNotyf().Object);
+        
+        // Act
+        IActionResult actual = homeController.RedirectToIndex();
+        
+        // Assert
+        RedirectToIndex_Assert_IsRedirectedToIndex(actual);
+    }
+
+    private static void RedirectToIndex_Assert_IsRedirectedToIndex(IActionResult actual)
+    {
+        Assert.IsNotNull(actual);
+        Assert.IsAssignableFrom<RedirectToActionResult>(actual);
+        RedirectToActionResult redirectResult = (RedirectToActionResult)actual;
+        Assert.AreEqual("Index", redirectResult.ActionName);
     }
 
     private void Index_Assert_MockRepoCalled(Mock<IPostRepository> mockRepo)
@@ -115,7 +136,7 @@ public class HomeControllerTests
         return mockRepo;
     }
 
-    private static Mock<IPostRepository> Index_Arrange_MockRepoEmpty()
+    private static Mock<IPostRepository> Index_Arrange_MockPostRepoEmpty()
     {
         return new Mock<IPostRepository>();
     }
