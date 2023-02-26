@@ -5,7 +5,7 @@ namespace DemoForum.Models;
 public class LoginViewModel
 {
     [RegularExpression("^[A-z0-9]+$", ErrorMessage = "帳號只允許輸入半形大小寫英文、半形數字！")]
-    [StringLength(12, ErrorMessage = "帳號長度應為 1 ~ 12 個字！")]
+    [StringLength(12, MinimumLength = 2, ErrorMessage = "帳號長度應為 2 ~ 12 個字！")]
     [Required(ErrorMessage = "未填入帳號！")]
     public string? Username { get; set; }
     
