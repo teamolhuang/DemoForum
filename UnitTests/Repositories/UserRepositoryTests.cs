@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using DemoForum.Models.Entities;
 using DemoForum.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using NUnit.Framework;
 
 namespace DemoForumTests.Repositories;
