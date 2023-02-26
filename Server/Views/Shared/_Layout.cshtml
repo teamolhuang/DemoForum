@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    bool isLogon = User.Identity?.IsAuthenticated ?? false;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -22,11 +26,30 @@
                     <li class="nav-item">
                         <a class="nav-link text-white-50" asp-area="" asp-controller="Home" asp-action="Index">首頁</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white-50" asp-area="" asp-controller="Post" asp-action="GetNewEditor">發表文章</a>
-                    </li>
+                    @if (isLogon)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" asp-area="" asp-controller="Post" asp-action="GetNewEditor">發表文章</a>
+                        </li>
+                    }
                 </ul>
             </div>
+            
+            @if (!isLogon)
+            {
+                <li class="nav-item" style="display: flex; justify-content: flex-end">
+                    <div><a class="nav-link text-white-50" asp-area="" asp-controller="User" asp-action="GetLogin">登入</a></div>
+                </li>
+                <li class="nav-item" style="display: flex; justify-content: flex-end">
+                    <div><a class="nav-link text-white-50" asp-area="" asp-controller="User" asp-action="GetRegister">註冊</a></div>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item" style="display: flex; justify-content: flex-end">
+                    <div><a class="nav-link text-white-50" asp-area="" asp-controller="User" asp-action="Logout">登出</a></div>
+                </li>
+            }
         </div>
     </nav>
 </header>

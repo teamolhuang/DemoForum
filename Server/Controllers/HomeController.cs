@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Models;
 using DemoForum.Models.Entities;
 using DemoForum.Repositories;
@@ -11,12 +12,15 @@ namespace DemoForum.Controllers;
 public class HomeController : Controller
 {
     private readonly IPostRepository _postRepository;
+    private INotyfService _notyf;
 
-    public HomeController(IPostRepository postRepository)
+    public HomeController(IPostRepository postRepository, INotyfService notyf)
     {
         _postRepository = postRepository;
+        _notyf = notyf;
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         IEnumerable<Post> posts = await _postRepository.ReadLatest(100);
@@ -38,5 +42,11 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    public IActionResult RedirectToIndex()
+    {
+        _notyf.Error("處理失敗，可能是網站忙碌中 ...");
+        return RedirectToAction("Index");
     }
 }

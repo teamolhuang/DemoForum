@@ -1,6 +1,6 @@
 ﻿namespace DemoForum.Models.Entities;
 
-public class Post
+public partial class Post
 {
     public int Id { get; set; }
 

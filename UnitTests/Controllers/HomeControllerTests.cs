@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using AspNetCoreHero.ToastNotification.Helpers;
 using DemoForum.Controllers;
 using DemoForum.Models;
@@ -65,11 +66,16 @@ public class HomeControllerTests
 
     private static async Task<IActionResult> Index_Act(Mock<IPostRepository> mockRepo)
     {
-        HomeController home = new(mockRepo.Object);
+        HomeController home = new(mockRepo.Object, Arrange_MockNotyf().Object);
         IActionResult actual = await home.Index();
         return actual;
     }
 
+    private static Mock<INotyfService> Arrange_MockNotyf()
+    {
+        return new Mock<INotyfService>();
+    }
+    
     private void Index_Assert_HasNoPostPreview(HomeViewModel viewModel)
     {
         CollectionAssert.IsEmpty(viewModel.Posts);

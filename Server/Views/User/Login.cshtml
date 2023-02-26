@@ -1,0 +1,29 @@
+﻿@model LoginViewModel
+
+<!DOCTYPE html>
+
+<html lang="zh-tw">
+<head>
+    <title>登入</title>
+</head>
+<body>
+<form asp-controller="User" asp-action="PostLogin" method="post">
+    <h2 legend>登入</h2>
+
+    <hr/>
+    
+    <h5 style="display: inline">帳號</h5> @Html.ValidationMessageFor(m => m.Username)<br/>
+    <input type="text" asp-for="Username" size="40" minlength="1" maxlength="12" pattern="^[A-z0-9]+$" placeholder="輸入帳號（1 ~ 12 個英數字） ..."/><br/>
+    
+    <h5 style="display: inline">密碼</h5> @Html.ValidationMessageFor(m => m.Password)<br/>
+    <input type="password" asp-for="Password" size="40" minlength="8" maxlength="20" pattern = "^[A-z0-9_%$!#]+$" placeholder="輸入密碼（8 ~ 20 個英數字、_%$!#符號） ..."/>
+
+    <hr/>
+
+    <h6><a>@Html.ActionLink("註冊新帳號", "GetRegister", "User", null)</a></h6>
+    <div class="submit">
+        <button type="submit">登入</button>
+    </div>
+</form>
+</body>
+</html>

@@ -1,6 +1,6 @@
-﻿using DemoForum.Utils;
+﻿using System;
+using DemoForum.Utils;
 using NUnit.Framework;
-using System;
 
 namespace DemoForumTests.Utils;
 

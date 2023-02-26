@@ -53,7 +53,7 @@ button:hover {
     background-color: var(--color-button-bg-hover);
 }
 
-input[type="text"], textarea {
+input[type="text"], textarea, input[type="password"] {
     background-color: var(--color-bg-input);
     color: var(--color-text);
 }
@@ -103,8 +103,7 @@ button {
 
 /* Error Message */
 
-.field-validation-error {
-    display: inline-block;
+.field-validation-error, .error-message {
     box-shadow: 0 0 0 3px var(--color-notification-input-error-bg);
     border-radius: 5px;
     color: var(--color-notification-input-error);
@@ -113,6 +112,15 @@ button {
     top: -5px;
     left: 5px;
     vertical-align: top;
+    font-weight: 600;
+}
+
+.error-message {
+    display: block;
+}
+
+.field-validation-error {
+    display: inline-block;
     animation: fade-in 0.5s ease-out, shake 0.4s, fade-out 0.5s ease 3s forwards; /* ease for animation-delay, forwards for keep animation state */
 }
 

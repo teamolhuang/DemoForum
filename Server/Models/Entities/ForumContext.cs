@@ -2,7 +2,7 @@
 
 namespace DemoForum.Models.Entities;
 
-public class ForumContext : DbContext
+public partial class ForumContext : DbContext
 {
     public ForumContext()
     {
@@ -14,6 +14,8 @@ public class ForumContext : DbContext
     }
 
     public virtual DbSet<Post> Posts { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -36,10 +38,24 @@ public class ForumContext : DbContext
             entity.Property(e => e.Title).HasMaxLength(20);
         });
 
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Username).HasName("User_pk");
+
+            entity.ToTable("User");
+
+            entity.HasIndex(e => e.Username, "User_Id_uindex").IsUnique();
+
+            entity.Property(e => e.Username)
+                .HasMaxLength(12)
+                .IsUnicode(false);
+            entity.Property(e => e.Password)
+                .HasMaxLength(72)
+                .IsUnicode(false);
+        });
+
         OnModelCreatingPartial(modelBuilder);
     }
 
-    private void OnModelCreatingPartial(ModelBuilder modelBuilder)
-    {
-    }
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

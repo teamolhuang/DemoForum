@@ -1,0 +1,29 @@
+﻿@model RegisterViewModel
+
+<!DOCTYPE html>
+
+<html lang="zh-tw">
+<head>
+    <title>註冊</title>
+</head>
+<body>
+<form asp-controller="User" asp-action="PostRegister" method="post">
+    <h2 legend>註冊帳號</h2>
+
+    <hr/>
+    
+    <h5 style="display: inline">帳號</h5> @Html.ValidationMessageFor(m => m.Username)<br/>
+    <input type="text" asp-for="Username" size="40" minlength="1" maxlength="12" pattern="^[A-z0-9]+$" placeholder="輸入帳號（1 ~ 12 個英數字） ..."/><br/>
+    
+    <h5 style="display: inline">密碼</h5> @Html.ValidationMessageFor(m => m.Password)<br/>
+    <input type="password" asp-for="Password" size="40" minlength="8" maxlength="20" pattern = "^[A-z0-9_%$!#]+$" placeholder="輸入密碼（8 ~ 20 個英數字、_%$!#符號） ..."/>
+
+    <hr/>
+    
+    <h6><a>@Html.ActionLink("登入", "GetLogin", "User", null)</a></h6>
+    <div class="submit">
+        <button type="submit">送出</button>
+    </div>
+</form>
+</body>
+</html>

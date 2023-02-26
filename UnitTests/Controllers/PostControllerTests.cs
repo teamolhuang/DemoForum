@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Threading.Tasks;
 using AspNetCoreHero.ToastNotification.Abstractions;
-using AspNetCoreHero.ToastNotification.Helpers;
 using DemoForum.Controllers;
 using DemoForum.Enums;
 using DemoForum.Models;

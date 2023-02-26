@@ -5,6 +5,9 @@ using DemoForum.Enums;
 using DemoForum.Models;
 using DemoForum.Models.Entities;
 using DemoForum.Repositories;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoForum.Controllers;
@@ -22,7 +25,8 @@ public class PostController : Controller
         _logger = logger;
     }
 
-    [HttpPost]
+    [HttpPost("Edit")]
+    [Authorize]
     public async Task<IActionResult> EditPost(EditPostViewModel editPost)
     {
         if (!ModelState.IsValid)
@@ -60,13 +64,15 @@ public class PostController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    [HttpGet]
+    [HttpGet("Edit")]
+    [Authorize]
     public IActionResult GetEditEditor()
     {
         return EditorView(PostMode.Edit);
     }
 
-    [HttpGet]
+    [HttpGet("New")]
+    [Authorize]
     public IActionResult GetNewEditor()
     {
         return EditorView(PostMode.New);
@@ -81,13 +87,13 @@ public class PostController : Controller
 
         return EditorView(editPostViewModel);
     }
-
+    
     private IActionResult EditorView(EditPostViewModel viewModel)
     {
         return View("EditPost", viewModel);
     }
 
-    [HttpGet]
+    [HttpGet("Read/{id}")]
     public async Task<IActionResult> Read(int id)
     {
         Post? post = await _postRepository.Read(id);
