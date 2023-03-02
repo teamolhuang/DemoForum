@@ -38,7 +38,7 @@ public class PostControllerTests
         // Assert
         Assert_Notyf_Success(mockNotyf);
         Assert_PostRepository_CreatedOnce(mockRepo, mockEntity);
-        Assert_RedirectedToIndexAction(actual);
+        actual.AssertAsRedirectToActionResult("Index", "Home");
     }
 
     [Test]
@@ -54,7 +54,7 @@ public class PostControllerTests
         IActionResult actual = await Act_EditPost_Post(controller, viewModel);
 
         // Assert
-        Assert_IsView_EditPost(actual);
+        actual.AssertAsExactViewModel(viewModel, "EditPost");
         Assert_PostRepository_NeverInteracted(mockRepo);
     }
 
@@ -105,8 +105,9 @@ public class PostControllerTests
         IActionResult actual = controller.GetEditEditor();
 
         // Assert
-        Assert_IsView_EditPost(actual);
-        EditPostViewModel editPostViewModel = Assert_IsViewModel_EditPost(actual);
+        EditPostViewModel editPostViewModel = actual
+            .AssertAsViewResult("EditPost")
+            .AssertAsViewModel<EditPostViewModel>();
         Assert_ViewModel_PostMode(editPostViewModel, PostMode.Edit);
     }
 
@@ -120,8 +121,9 @@ public class PostControllerTests
         IActionResult actual = controller.GetNewEditor();
 
         // Assert
-        Assert_IsView_EditPost(actual);
-        EditPostViewModel editPostViewModel = Assert_IsViewModel_EditPost(actual);
+        EditPostViewModel editPostViewModel = actual
+            .AssertAsViewResult("EditPost")
+            .AssertAsViewModel<EditPostViewModel>();
         Assert_ViewModel_PostMode(editPostViewModel, PostMode.New);
     }
 
@@ -140,7 +142,8 @@ public class PostControllerTests
 
         // Assert
         Assert_Read_RepoCalledOnce(id, mockRepo);
-        PostViewModel viewModel = Assert_Read_IsPostViewModel(actual);
+        PostViewModel viewModel = actual
+            .AssertAsViewModel<PostViewModel>();
         Assert_Read_ResultIsSameAsEntity(title, content, viewModel, mockPost);
     }
 
@@ -164,9 +167,7 @@ public class PostControllerTests
 
     private static void Assert_Read_ViewModelIsNull(IActionResult actual)
     {
-        Assert.IsAssignableFrom<ViewResult>(actual);
-        ViewResult viewResult = (ViewResult)actual;
-        Assert.IsNull(viewResult.Model);
+        Assert.IsNull(actual.AssertAsViewResult().Model);
     }
 
     private static void Assert_Read_ResultIsSameAsEntity(string title, string content, PostViewModel viewModel,
@@ -175,16 +176,6 @@ public class PostControllerTests
         Assert.AreEqual(title, viewModel.Title);
         Assert.AreEqual(content, viewModel.Content);
         Assert.AreEqual(mockPost.CreatedTime.ToString(CultureInfo.CurrentCulture), viewModel.CreatedTime);
-    }
-
-    private static PostViewModel Assert_Read_IsPostViewModel(IActionResult actual)
-    {
-        Assert.IsAssignableFrom<ViewResult>(actual);
-        ViewResult viewResult = (ViewResult)actual;
-        Assert.IsNotNull(viewResult.Model);
-        Assert.IsAssignableFrom<PostViewModel>(viewResult.Model);
-        PostViewModel viewModel = (PostViewModel)viewResult.Model!;
-        return viewModel;
     }
 
     private Post Arrange_Post(string title, string content)
@@ -267,16 +258,6 @@ public class PostControllerTests
         return mockModel;
     }
 
-    private void Assert_RedirectedToIndexAction(IActionResult actual)
-    {
-        Assert.IsAssignableFrom<RedirectToActionResult>(actual);
-        RedirectToActionResult redirectResult = (RedirectToActionResult)actual;
-        Assert.NotNull(redirectResult.ActionName);
-        Assert.AreEqual("Index", redirectResult.ActionName!);
-        Assert.NotNull(redirectResult.ControllerName);
-        Assert.AreEqual("Home", redirectResult.ControllerName!);
-    }
-
     private void Assert_PostRepository_CreatedOnce(Mock<IPostRepository> mockRepo, Post mockEntity)
     {
         mockRepo.Verify(m =>
@@ -296,13 +277,6 @@ public class PostControllerTests
         mockRepo.VerifyNoOtherCalls();
     }
 
-    private void Assert_IsView_EditPost(IActionResult actual)
-    {
-        Assert.IsAssignableFrom<ViewResult>(actual);
-        ViewResult viewResult = (ViewResult)actual;
-        Assert.AreEqual("EditPost", viewResult.ViewName!);
-    }
-
     private static async Task<IActionResult> Act_EditPost_Post(PostController controller, EditPostViewModel viewModel)
     {
         return await controller.EditPost(viewModel);
@@ -312,15 +286,6 @@ public class PostControllerTests
     private void Assert_ViewModel_PostMode(EditPostViewModel editPostViewModel, PostMode postMode)
     {
         Assert.AreEqual(postMode, editPostViewModel.PostMode);
-    }
-
-    private static EditPostViewModel Assert_IsViewModel_EditPost(IActionResult actual)
-    {
-        ViewResult viewResult = (ViewResult)actual;
-        Assert.NotNull(viewResult.Model);
-        Assert.IsAssignableFrom<EditPostViewModel>(viewResult.Model);
-        EditPostViewModel editPostViewModel = (EditPostViewModel)((ViewResult)actual).Model!;
-        return editPostViewModel;
     }
 
     private static PostController Arrange_Controller_Default()

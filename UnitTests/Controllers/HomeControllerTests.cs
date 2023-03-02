@@ -39,7 +39,7 @@ public class HomeControllerTests
         // Assert
         Index_Assert_MockRepoCalled(mockRepo);
 
-        HomeViewModel viewModel = Index_Arrange_IsHomeViewModel(actual);
+        HomeViewModel viewModel = actual.AssertAsViewModel<HomeViewModel>();
         Index_Assert_PostPreviewProperlyFormatted(viewModel, posts);
     }
 
@@ -55,7 +55,7 @@ public class HomeControllerTests
         // Assert
         Index_Assert_MockRepoCalled(mockRepo);
 
-        HomeViewModel viewModel = Index_Arrange_IsHomeViewModel(actual);
+        HomeViewModel viewModel = actual.AssertAsViewModel<HomeViewModel>(); 
         Index_Assert_HasNoPostPreview(viewModel);
     }
 
@@ -64,20 +64,12 @@ public class HomeControllerTests
     {
         // Arrange
         HomeController homeController = new(Index_Arrange_MockPostRepoEmpty().Object, Arrange_MockNotyf().Object);
-        
+
         // Act
         IActionResult actual = homeController.RedirectToIndex();
-        
-        // Assert
-        RedirectToIndex_Assert_IsRedirectedToIndex(actual);
-    }
 
-    private static void RedirectToIndex_Assert_IsRedirectedToIndex(IActionResult actual)
-    {
-        Assert.IsNotNull(actual);
-        Assert.IsAssignableFrom<RedirectToActionResult>(actual);
-        RedirectToActionResult redirectResult = (RedirectToActionResult)actual;
-        Assert.AreEqual("Index", redirectResult.ActionName);
+        // Assert
+        actual.AssertAsRedirectToActionResult("Index");
     }
 
     private void Index_Assert_MockRepoCalled(Mock<IPostRepository> mockRepo)
@@ -118,15 +110,6 @@ public class HomeControllerTests
             Assert.True(json.Contains(post.Id.ToString().PadLeft(7, '0')));
             Assert.True(json.Contains(post.CreatedTime.ToString(CultureInfo.CurrentCulture)));
         }
-    }
-
-    private static HomeViewModel Index_Arrange_IsHomeViewModel(IActionResult actual)
-    {
-        Assert.IsAssignableFrom<ViewResult>(actual);
-        ViewResult viewResult = (ViewResult)actual;
-        Assert.IsAssignableFrom<HomeViewModel>(viewResult.Model);
-        HomeViewModel viewModel = (HomeViewModel)viewResult.Model!;
-        return viewModel;
     }
 
     private static Mock<IPostRepository> Index_Arrange_MockRepo(List<Post> posts)
