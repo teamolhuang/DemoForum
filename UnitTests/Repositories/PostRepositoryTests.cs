@@ -15,6 +15,9 @@ public class PostRepositoryTests
     private const string TestContent = "TestContent";
     private ForumContext? _forumContext;
     
+    private const string MockUsername = "MockUsername";
+    private const string MockUserPassword = "MockPassword";
+
     [SetUp]
     public void SetUp()
     {
@@ -128,11 +131,23 @@ public class PostRepositoryTests
             {
                 Title = TestTitle + i,
                 Content = DateTime.Now.Ticks.ToString(),
-                CreatedTime = DateTime.Now
+                CreatedTime = DateTime.Now,
+                AuthorId = 1 + i,
+                Author = Arrange_MockUser(1 + i, MockUsername)
             });
         }
 
         _forumContext!.SaveChanges();
+    }
+
+    private static User Arrange_MockUser(int mockUserId, string mockUsername)
+    {
+        return new User
+        {
+            Id = mockUserId,
+            Username = mockUsername,
+            Password = MockUserPassword
+        };
     }
 
     private void Assert_Create_EntityInDbHasColumnsFilled(Post post)
@@ -143,6 +158,8 @@ public class PostRepositoryTests
         Assert.NotNull(queried!.Id);
         Assert.NotZero(queried.Id);
         Assert.NotNull(queried.CreatedTime);
+        Assert.NotZero(queried.AuthorId);
+        Assert.NotNull(queried.Author);
     }
     
     private void Arrange_CheckDbEmpty()
@@ -155,7 +172,9 @@ public class PostRepositoryTests
         Post post = new()
         {
             Title = TestTitle,
-            Content = TestContent
+            Content = TestContent,
+            AuthorId = 1,
+            Author = Arrange_MockUser(1, MockUsername)
         };
         return post;
     }

@@ -31,7 +31,8 @@ public class HomeController : Controller
                     Id = p.Id.ToString().PadLeft(7, '0'),
                     Title = p.Title.ShortenToPreviewDefault(),
                     Content = p.Content.ShortenToPreviewDefault(40),
-                    CreatedTime = p.CreatedTime.ToString(CultureInfo.CurrentCulture)
+                    CreatedTime = p.CreatedTime.ToString(CultureInfo.CurrentCulture),
+                    AuthorName = p.Author.Username
                 })
         };
 

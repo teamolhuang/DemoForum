@@ -22,6 +22,9 @@ public class HomeControllerTests
 
     private const string MockContentLong = "VeryLooooooooooooooooooooooooooooooooooooooooong";
     private const string MockContentShort = "Not so long";
+    
+    private const string MockUsername = "MockUsername";
+    private const string MockUserPassword = "MockPassword";
 
     private const int ContentPreviewLength = 40;
 
@@ -104,6 +107,8 @@ public class HomeControllerTests
         Assert.False(json.Contains(MockContentLong));
         Assert.True(json.Contains(MockContentLong.ShortenToPreview(ContentPreviewLength)));
         Assert.True(json.Contains(MockContentShort));
+        
+        Assert.True(json.Contains(MockUsername));
 
         foreach (Post post in posts)
         {
@@ -133,15 +138,29 @@ public class HomeControllerTests
                 Id = 1,
                 Title = mockTitle1,
                 Content = MockContentLong,
-                CreatedTime = DateTime.Now + TimeSpan.FromHours(1)
+                CreatedTime = DateTime.Now + TimeSpan.FromHours(1),
+                AuthorId = 1,
+                Author = Arrange_MockUser(1, MockUsername, MockUserPassword)
             },
             new()
             {
                 Id = 2,
                 Title = mockTitle2,
                 Content = MockContentShort,
-                CreatedTime = DateTime.Now
+                CreatedTime = DateTime.Now,
+                AuthorId = 2,
+                Author = Arrange_MockUser(2, MockUsername, MockUserPassword)
             }
+        };
+    }
+
+    private static User Arrange_MockUser(int mockId, string mockUsername, string mockPassword)
+    {
+        return new()
+        {
+            Id = mockId,
+            Username = mockUsername,
+            Password = mockPassword
         };
     }
 }

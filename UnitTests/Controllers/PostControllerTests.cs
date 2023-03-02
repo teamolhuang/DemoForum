@@ -62,7 +62,7 @@ public class PostControllerTests
 
 
     [Test]
-    public void EditPostWithModel_WillCheckSid_AndThrowException()
+    public void EditPostWithModel_WillCheckSid_AndShowErrorMessage()
     {
         // Arrange
         Mock<IPostRepository> mockRepo = Arrange_Repo();
@@ -75,8 +75,9 @@ public class PostControllerTests
 
         // Act
         // Assert
-        Assert.ThrowsAsync<Exception>(() => Act_EditPost_Post(postController, mockModel));
+        Assert.DoesNotThrowAsync(() => Act_EditPost_Post(postController, mockModel));
         Assert_PostRepository_NeverInteracted(mockRepo);
+        Assert_Notyf_ErrorAtLeastOnce(mockNotyf);
     }
 
     private static Mock<HttpContext> EditPostWithModel_Arrange_HttpContextWihoutSid()

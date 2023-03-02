@@ -40,6 +40,7 @@ public class PostRepository : IPostRepository
     public async Task<IEnumerable<Post>> ReadLatest(int rows)
     {
         return await _context.Posts
+            .Include(p => p.Author)
             .OrderByDescending(p => p.CreatedTime)
             .Take(rows)
             .ToListAsync();

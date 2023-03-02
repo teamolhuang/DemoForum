@@ -11,7 +11,7 @@
     <h6><a>@Html.ActionLink("回首頁", "Index", "Home", null)</a></h6>
     <hr/>
     <h2 class="post-title" legend>@(Model?.Title ?? "無題")</h2>
-    <p class="post-number" style="display: inline">@(Model?.CreatedTime ?? "-")</p>
+    <p class="post-info" style="display: inline">@(Model?.CreatedTime ?? "-")</p>
     <hr/>
     @(Model?.Content ?? "無內容，文章可能已被刪除 ...")
 </div>
