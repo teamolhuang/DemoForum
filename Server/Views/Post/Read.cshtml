@@ -1,5 +1,9 @@
 ﻿@model PostViewModel?
 
+@{
+    bool isValid = Model != null;
+}
+
 <!DOCTYPE html>
 
 <html lang="zh-tw">
@@ -10,10 +14,17 @@
 <div>
     <h6><a>@Html.ActionLink("回首頁", "Index", "Home", null)</a></h6>
     <hr/>
-    <h2 class="post-title" legend>@(Model?.Title ?? "無題")</h2>
-    <p class="post-info" style="display: inline">@(Model?.CreatedTime ?? "-")</p>
-    <hr/>
-    @(Model?.Content ?? "無內容，文章可能已被刪除 ...")
+    @if (isValid)
+    {
+        <h2 class="post-title" legend>@Model!.Title</h2>
+        <p class="post-info" style="display: inline">@Model.CreatedTime)</p>
+        <hr/>
+        <h5>@Model.Content</h5>
+    }
+    else
+    {
+        <h5>查無內容，文章可能已被刪除 ...</h5>
+    }
 </div>
 </body>
 </html>
