@@ -25,12 +25,12 @@ public static class ExtensionMethods
     public static ViewResult AssertAsViewResult(this IActionResult actionResult
         , string? viewName = null)
     {
-        viewName ??= It.IsAny<string>();
-
         Assert.IsNotNull(actionResult);
         Assert.IsAssignableFrom<ViewResult>(actionResult);
         ViewResult viewResult = (ViewResult)actionResult;
-        Assert.AreEqual(viewName, viewResult.ViewName);
+        
+        if (viewName != null)
+            Assert.AreEqual(viewName, viewResult.ViewName);
 
         return viewResult;
     }
@@ -46,14 +46,16 @@ public static class ExtensionMethods
         , string? actionName = null
         , string? controllerName = null)
     {
-        actionName ??= It.IsAny<string>();
-        controllerName ??= It.IsAny<string>();
-        
+
         Assert.IsNotNull(actionResult);
         Assert.IsAssignableFrom<RedirectToActionResult>(actionResult);
         RedirectToActionResult redirectResult = (RedirectToActionResult)actionResult;
-        Assert.AreEqual(actionName, redirectResult.ActionName);
-        Assert.AreEqual(controllerName, redirectResult.ControllerName);
+        
+        if (actionName != null)
+            Assert.AreEqual(actionName, redirectResult.ActionName);
+        
+        if (controllerName != null)
+            Assert.AreEqual(controllerName, redirectResult.ControllerName);
 
         return redirectResult;
     }
