@@ -48,7 +48,7 @@ public class PostControllerTests
         Mock<IPostRepository> mockRepo = Arrange_Repo();
         PostController controller = Arrange_Controller(mockRepo, Arrange_Notyf(), Arrange_Logger());
         EditPostViewModel viewModel = new();
-        controller.ModelState.AddModelError("test", "test");
+        controller.ModelState.AddModelMockError();
 
         // Act
         IActionResult actual = await Act_EditPost_Post(controller, viewModel);
