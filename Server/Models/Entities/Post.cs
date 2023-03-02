@@ -12,5 +12,7 @@ public partial class Post
 
     public int AuthorId { get; set; }
 
+    public byte[] Version { get; set; } = null!;
+
     public virtual User Author { get; set; } = null!;
 }

@@ -36,6 +36,9 @@ public partial class ForumContext : DbContext
             entity.Property(e => e.Content).HasMaxLength(2000);
             entity.Property(e => e.CreatedTime).HasColumnType("datetime");
             entity.Property(e => e.Title).HasMaxLength(20);
+            entity.Property(e => e.Version)
+                .IsRowVersion()
+                .IsConcurrencyToken();
 
             entity.HasOne(d => d.Author).WithMany(p => p.Posts)
                 .HasForeignKey(d => d.AuthorId)
@@ -59,6 +62,9 @@ public partial class ForumContext : DbContext
             entity.Property(e => e.Username)
                 .HasMaxLength(12)
                 .IsUnicode(false);
+            entity.Property(e => e.Version)
+                .IsRowVersion()
+                .IsConcurrencyToken();
         });
 
         OnModelCreatingPartial(modelBuilder);
