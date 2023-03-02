@@ -18,7 +18,7 @@ builder.Services.AddDbContext<ForumContext>();
 // Adds toast notification
 builder.Services.AddNotyf(config =>
 {
-    config.Position = NotyfPosition.TopLeft;
+    config.Position = NotyfPosition.TopCenter;
     config.DurationInSeconds = 10;
     config.HasRippleEffect = true;
     config.IsDismissable = true;
