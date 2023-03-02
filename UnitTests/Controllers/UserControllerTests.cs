@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Controllers;
 using DemoForum.Models;
@@ -14,7 +12,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 

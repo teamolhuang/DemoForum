@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Moq;
 using NUnit.Framework;
 
 namespace DemoForumTests.Controllers;
