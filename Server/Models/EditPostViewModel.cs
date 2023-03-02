@@ -16,4 +16,6 @@ public class EditPostViewModel
     public string? PostContent { get; set; }
 
     public PostMode PostMode { get; set; }
+
+    public string PostModeString => PostMode.GetChinese();
 }

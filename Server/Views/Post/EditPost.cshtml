@@ -1,9 +1,8 @@
-﻿@using DemoForum.Enums
-@using Microsoft.AspNetCore.Mvc.TagHelpers
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model EditPostViewModel
 
 @{
-    ViewData["Title"] = $"{Model.PostMode.GetChinese()}文章";
+    ViewData["Title"] = $"{Model.PostModeString}文章";
 }
 
 <!DOCTYPE html>
