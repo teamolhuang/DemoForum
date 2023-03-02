@@ -6,6 +6,7 @@ using DemoForum.Repositories;
 using DemoForum.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoForum.Controllers;
@@ -105,9 +106,11 @@ public class UserController : Controller
     }
 
     [AcceptVerbs("GET", "POST")]
+    [Authorize]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        _notyf.Information("已登出，請重新登入。");
         return RedirectToAction("GetLogin");
     }
 
