@@ -30,21 +30,22 @@ public class PostController : Controller
     {
         if (!ModelState.IsValid)
             return EditorView(editPost);
-
-        // redirect to error page when no suitable claim is found
-        string? sidString = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
-        if (sidString == null || !int.TryParse(sidString, out int sidInt))
-            throw new Exception($"Sid claim not found or not parsable! val: {sidString}");
         
-        Post entity = new()
-        {
-            Title = editPost.PostTitle!,
-            Content = editPost.PostContent!,
-            AuthorId = sidInt
-        };
-
+        string? sidString = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+        
         try
         {
+            // throw Exception when no suitable claim is found
+            if (sidString == null || !int.TryParse(sidString, out int sidInt))
+                throw new ArgumentException($"Sid claim not found or not parsable!");
+            
+            Post entity = new()
+            {
+                Title = editPost.PostTitle!,
+                Content = editPost.PostContent!,
+                AuthorId = sidInt
+            };
+            
             switch (editPost.PostMode)
             {
                 case PostMode.Edit:
@@ -61,6 +62,7 @@ public class PostController : Controller
         catch (Exception e)
         {
             _logger.LogError($"GetEditEditor failed, mode {editPost.PostMode}, {editPost}");
+            _logger.LogError($"Cookie sidString: {sidString}");
             _logger.LogError(e.ToString());
             _notyfService.Error("發文失敗，請通知網站管理員 ...");
             _notyfService.Error(HttpUtility.JavaScriptStringEncode(e.Message));
