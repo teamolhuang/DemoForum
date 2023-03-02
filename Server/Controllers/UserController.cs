@@ -12,8 +12,8 @@ namespace DemoForum.Controllers;
 
 public class UserController : Controller
 {
-    private IUserRepository _userRepository;
-    private INotyfService _notyf;
+    private readonly IUserRepository _userRepository;
+    private readonly INotyfService _notyf;
 
     public UserController(IUserRepository userRepository, INotyfService notyf)
     {
