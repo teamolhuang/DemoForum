@@ -55,28 +55,29 @@ public class UserController : Controller
             return View("Login", viewModel);
         
         // Check if login is valid through db
-        bool isValid = await _userRepository.CheckLoginValid(new()
+        (bool isValid, User? entity) = await _userRepository.CheckLoginValid(new()
         {
             Username = viewModel.Username!,
             Password = viewModel.Password!
         });
 
-        if (!isValid)
+        if (!isValid || entity == null)
         {
             _notyf.Error("帳號不存在或登入帳密有誤！請檢查登入資訊。");
             return View("Login", viewModel);
         }
         
-        await LoginCookie(viewModel);
+        await LoginCookie(entity);
         _notyf.Success("登入成功！");
         return RedirectToAction("Index", "Home");
     }
 
-    private async Task LoginCookie(LoginViewModel viewModel)
+    private async Task LoginCookie(User entity)
     {
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, viewModel.Username!),
+            new(ClaimTypes.Sid, entity.Id.ToString()),
+            new(ClaimTypes.NameIdentifier, entity.Username)
         };
 
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

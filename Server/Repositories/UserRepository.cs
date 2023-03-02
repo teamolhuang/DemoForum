@@ -62,10 +62,10 @@ public class UserRepository : IUserRepository
     /// </summary>
     /// <param name="model">User</param>
     /// <returns>true: password is correct</returns>
-    public async Task<bool> CheckLoginValid(User model)
+    public async Task<(bool, User?)> CheckLoginValid(User model)
     {
         User? entity = await Read(model.Username);
-
-        return entity != null && BCrypt.Net.BCrypt.Verify(model.Password, entity.Password);
+        bool isValid = entity != null && BCrypt.Net.BCrypt.Verify(model.Password, entity.Password);
+        return (isValid, entity);
     }
 }

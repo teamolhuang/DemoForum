@@ -4,5 +4,5 @@ namespace DemoForum.Repositories;
 
 public interface IUserRepository : ICrudRepository<User, string>
 {
-    Task<bool> CheckLoginValid(User user);
+    Task<(bool, User?)> CheckLoginValid(User user);
 }

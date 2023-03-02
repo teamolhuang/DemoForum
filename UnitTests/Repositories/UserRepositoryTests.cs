@@ -106,10 +106,21 @@ public class UserRepositoryTests
         User input = Arrange_UserObject(loginUsername, loginPassword);
         
         // Act
-        bool actual = await userRepository.CheckLoginValid(input);
+        (bool actualIsValid, User? actualEntity) = await userRepository.CheckLoginValid(input);
 
         // Assert
-        Assert.AreEqual(username == loginUsername && password == loginPassword, actual);
+        Assert.AreEqual(username == loginUsername && password == loginPassword, actualIsValid);
+        if (actualIsValid)
+        {
+            Assert.IsNotNull(actualEntity);
+            Assert.AreEqual(entity.Username, actualEntity!.Username);
+            CheckLoginValid_Assert_VerifyPassword(entity.Password, actualEntity.Password);
+        }
+    }
+
+    private static void CheckLoginValid_Assert_VerifyPassword(string originalPassword, string hash)
+    {
+        Assert.IsTrue(BCrypt.Net.BCrypt.Verify(originalPassword, hash));
     }
 
     private static void Create_Assert_EntityIsNotOverriden(User original, User entity, User input)

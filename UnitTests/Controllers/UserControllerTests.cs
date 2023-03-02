@@ -273,13 +273,17 @@ public class UserControllerTests
     private static void Arrange_MockRepo_CheckLoginValid(Mock<IUserRepository> mockRepo, LoginViewModel viewModel)
     {
         mockRepo.Setup(m => m.CheckLoginValid(UserLoginComparer(viewModel)))
-            .ReturnsAsync(true);
+            .ReturnsAsync((true, new()
+            {
+                Username = viewModel.Username!,
+                Password = viewModel.Password!
+            }));
     }
     
     private static void Arrange_MockRepo_CheckLoginInvalid(Mock<IUserRepository> mockRepo, LoginViewModel viewModel)
     {
         mockRepo.Setup(m => m.CheckLoginValid(UserLoginComparer(viewModel)))
-            .ReturnsAsync(false);
+            .ReturnsAsync((false, null));
     }
 
     private static void Arrange_MockRepo_Create(Mock<IUserRepository> mockRepo, RegisterViewModel viewModel)
@@ -352,12 +356,7 @@ public class UserControllerTests
         };
         return (controller, mockService);
     }
-
-    private static void Arrange_Controller_SetMockControllerContext(UserController controller)
-    {
-        controller.ControllerContext = Mock.Of<ControllerContext>();
-    }
-
+    
     private static Mock<INotyfService> Arrange_MockNotyf()
     {
         return new Mock<INotyfService>();
