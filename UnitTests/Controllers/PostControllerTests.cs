@@ -59,6 +59,43 @@ public class PostControllerTests
     }
 
     [Test]
+    [TestCase(PostMode.Edit)]
+    [TestCase(PostMode.New)]
+    public void EditPost_WillCatchError_AndReturnToIndexWithNotyf(PostMode postMode)
+    {
+        // Arrange
+        Mock<IPostRepository> mockRepo = Arrange_Repo();
+        EditPostViewModel viewModel;
+        switch (postMode)
+        {
+            case PostMode.New:
+                mockRepo.Setup(m => m.Create(It.IsAny<Post>())).Throws<Exception>();
+                viewModel = Arrange_EditPostViewModel_New();
+                break;
+            case PostMode.Edit:
+                mockRepo.Setup(m => m.Update(It.IsAny<int>(), It.IsAny<Post>())).Throws<Exception>();
+                viewModel = Arrange_EditPostViewModel_Edit();
+                break;
+            default:
+                Assert.Fail();
+                return;
+        }
+        
+        Mock<INotyfService> mockNotyf = Arrange_Notyf();
+        PostController controller = Arrange_Controller(mockRepo, mockNotyf, Arrange_Logger());
+
+        // Act
+        // Assert
+        Assert.DoesNotThrowAsync(() => controller.EditPost(viewModel));
+        Assert_Notyf_ErrorAtLeastOnce(mockNotyf);
+    }
+
+    private static void Assert_Notyf_ErrorAtLeastOnce(Mock<INotyfService> mockNotyf)
+    {
+        mockNotyf.Verify(m => m.Error(It.IsAny<string>(), default), Times.AtLeastOnce);
+    }
+
+    [Test]
     public void GetEditEditor_WillCreateView_AndReturnEditMode()
     {
         // Arrange
@@ -215,6 +252,17 @@ public class PostControllerTests
             PostTitle = MockPostTitle,
             PostContent = MockPostContent,
             PostMode = PostMode.New
+        };
+        return mockModel;
+    }
+    
+    private static EditPostViewModel Arrange_EditPostViewModel_Edit()
+    {
+        EditPostViewModel mockModel = new()
+        {
+            PostTitle = MockPostTitle,
+            PostContent = MockPostContent,
+            PostMode = PostMode.Edit
         };
         return mockModel;
     }
