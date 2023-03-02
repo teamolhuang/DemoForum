@@ -12,6 +12,15 @@ public class UserRepository : IUserRepository
         _forumContext = forumContext;
     }
 
+    /// <summary>
+    /// Registers a new User. <br/>
+    /// Checks if the username already exists, throws ArguementException when true.<br/>
+    /// Creates the data row with Password encrypted.<br/>
+    /// Note that the Username db column is case-insensitive.
+    /// </summary>
+    /// <param name="model">User</param>
+    /// <returns>Created entity</returns>
+    /// <exception cref="ArgumentException">If username already exists in db.</exception>
     public async Task<User> Create(User model)
     {
         // User.username is case-insensitive in DB, hence no need for cultureInfo
@@ -27,6 +36,12 @@ public class UserRepository : IUserRepository
         return model;
     }
 
+    /// <summary>
+    /// Gets an User from db by Username as key.<br/>
+    /// Note that the Username db column is case-insensitive. 
+    /// </summary>
+    /// <param name="key">Username</param>
+    /// <returns>Entity; null if not found.</returns>
     public async Task<User?> Read(string key)
     {
         return await _forumContext.Users.FirstOrDefaultAsync(u => u.Username == key);
@@ -45,8 +60,8 @@ public class UserRepository : IUserRepository
     /// <summary>
     /// Checks if a login credential is valid. Don't encrypt input password beforehand.
     /// </summary>
-    /// <param name="model"></param>
-    /// <returns></returns>
+    /// <param name="model">User</param>
+    /// <returns>true: password is correct</returns>
     public async Task<bool> CheckLoginValid(User model)
     {
         User? entity = await Read(model.Username);
