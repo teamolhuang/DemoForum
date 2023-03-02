@@ -36,21 +36,28 @@ public partial class ForumContext : DbContext
             entity.Property(e => e.Content).HasMaxLength(2000);
             entity.Property(e => e.CreatedTime).HasColumnType("datetime");
             entity.Property(e => e.Title).HasMaxLength(20);
+
+            entity.HasOne(d => d.Author).WithMany(p => p.Posts)
+                .HasForeignKey(d => d.AuthorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Post_User_Id_fk");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Username).HasName("User_pk");
+            entity.HasKey(e => e.Id).HasName("User_pk");
 
             entity.ToTable("User");
 
-            entity.HasIndex(e => e.Username, "User_Id_uindex").IsUnique();
+            entity.HasIndex(e => e.Id, "User_Id_uindex").IsUnique();
 
-            entity.Property(e => e.Username)
-                .HasMaxLength(12)
-                .IsUnicode(false);
+            entity.HasIndex(e => e.Username, "User_Username_uindex").IsUnique();
+
             entity.Property(e => e.Password)
                 .HasMaxLength(72)
+                .IsUnicode(false);
+            entity.Property(e => e.Username)
+                .HasMaxLength(12)
                 .IsUnicode(false);
         });
 

@@ -9,4 +9,8 @@ public partial class Post
     public string Content { get; set; } = null!;
 
     public DateTime CreatedTime { get; set; }
+
+    public int AuthorId { get; set; }
+
+    public virtual User Author { get; set; } = null!;
 }
