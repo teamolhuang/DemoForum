@@ -40,12 +40,12 @@ public class PostController : Controller
         {
             switch (editPost.PostMode)
             {
+                case PostMode.Edit:
+                    await _postRepository.Update(editPost.EntityId, entity);
+                    break;
                 case PostMode.New:
                 default:
                     await _postRepository.Create(entity);
-                    break;
-                case PostMode.Edit:
-                    await _postRepository.Update(editPost.EntityId, entity);
                     break;
             }
 

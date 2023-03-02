@@ -68,25 +68,25 @@ public class PostControllerTests
         EditPostViewModel viewModel;
         switch (postMode)
         {
-            case PostMode.New:
-                mockRepo.Setup(m => m.Create(It.IsAny<Post>())).Throws<Exception>();
-                viewModel = Arrange_EditPostViewModel_New();
-                break;
             case PostMode.Edit:
                 mockRepo.Setup(m => m.Update(It.IsAny<int>(), It.IsAny<Post>())).Throws<Exception>();
                 viewModel = Arrange_EditPostViewModel_Edit();
                 break;
+            case PostMode.New:
             default:
-                Assert.Fail();
-                return;
+                mockRepo.Setup(m => m.Create(It.IsAny<Post>())).Throws<Exception>();
+                viewModel = Arrange_EditPostViewModel_New();
+                break;
         }
         
         Mock<INotyfService> mockNotyf = Arrange_Notyf();
         PostController controller = Arrange_Controller(mockRepo, mockNotyf, Arrange_Logger());
 
         // Act
-        // Assert
         Assert.DoesNotThrowAsync(() => controller.EditPost(viewModel));
+        
+        // Assert
+        mockRepo.VerifyAll();
         Assert_Notyf_ErrorAtLeastOnce(mockNotyf);
     }
 
