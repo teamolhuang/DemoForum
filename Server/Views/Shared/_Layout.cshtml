@@ -1,5 +1,8 @@
-﻿@{
+﻿@using System.Security.Claims
+
+@{
     bool isLogon = User.Identity?.IsAuthenticated ?? false;
+    string? logonUsername = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 }
 
 <!DOCTYPE html>
@@ -46,6 +49,9 @@
             }
             else
             {
+                <li class="nav-item" style="display: flex; justify-content: flex-end">
+                    <div><h class="nav-link text-white-50">@logonUsername</h></div>
+                </li>
                 <li class="nav-item" style="display: flex; justify-content: flex-end">
                     <div><a class="nav-link text-white-50" asp-area="" asp-controller="User" asp-action="Logout">登出</a></div>
                 </li>
