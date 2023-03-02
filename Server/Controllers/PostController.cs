@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Security.Claims;
 using System.Web;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Enums;
@@ -30,10 +31,16 @@ public class PostController : Controller
         if (!ModelState.IsValid)
             return EditorView(editPost);
 
+        // redirect to error page when no suitable claim is found
+        string? sidString = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+        if (sidString == null || !int.TryParse(sidString, out int sidInt))
+            throw new Exception($"Sid claim not found or not parsable! val: {sidString}");
+        
         Post entity = new()
         {
             Title = editPost.PostTitle!,
-            Content = editPost.PostContent!
+            Content = editPost.PostContent!,
+            AuthorId = sidInt
         };
 
         try

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Controllers;
@@ -7,6 +9,7 @@ using DemoForum.Enums;
 using DemoForum.Models;
 using DemoForum.Models.Entities;
 using DemoForum.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -20,25 +23,82 @@ public class PostControllerTests
     private const string MockPostContent = "MockContent";
     private const string PostSuccessMessage = "發文成功！";
 
+    private const int MockSid = 645;
+    private const string MockNameIdentifier = "MockUsername";
+    
     [Test]
-    public async Task EditPostWithModel_WillCheckEditIsCorrect_AndCreateToDBAndRedirectToIndex()
+    public async Task EditPostWithModel_WillCheckNewPostIsCorrect_AndCreateToDBAndRedirectToIndex()
     {
         // Arrange
         Mock<IPostRepository> mockRepo = Arrange_Repo();
         Mock<INotyfService> mockNotyf = Arrange_Notyf();
+        Mock<HttpContext> mockHttpContext = EditPostWithModel_Arrange_HttpContextWithProperClaim();
 
-        PostController postController = Arrange_Controller(mockRepo, mockNotyf, Arrange_Logger());
+        PostController postController = Arrange_Controller_WithMockHttpContext(mockRepo, mockNotyf, Arrange_Logger(), mockHttpContext);
 
         EditPostViewModel mockModel = Arrange_EditPostViewModel_New();
-        Post mockEntity = Arrange_Post_FromMockViewModel(mockModel);
+        Post mockEntity = Arrange_Post_FromMockViewModel(mockModel, MockSid);
 
         // Act
         IActionResult actual = await Act_EditPost_Post(postController, mockModel);
 
         // Assert
         Assert_Notyf_Success(mockNotyf);
+        mockHttpContext.VerifyAll();
         Assert_PostRepository_CreatedOnce(mockRepo, mockEntity);
         actual.AssertAsRedirectToActionResult("Index", "Home");
+    }
+
+    private static Mock<HttpContext> EditPostWithModel_Arrange_HttpContextWithProperClaim()
+    {
+        Mock<HttpContext> mockHttpContext = new();
+        mockHttpContext.Setup(m => m.User.Claims).Returns(new List<Claim>
+        {
+            new(ClaimTypes.Sid, MockSid.ToString()),
+            new(ClaimTypes.NameIdentifier, MockNameIdentifier)
+        });
+        return mockHttpContext;
+    }
+
+
+    [Test]
+    public void EditPostWithModel_WillCheckSid_AndThrowException()
+    {
+        // Arrange
+        Mock<IPostRepository> mockRepo = Arrange_Repo();
+        Mock<INotyfService> mockNotyf = Arrange_Notyf();
+        Mock<HttpContext> mockHttpContext = EditPostWithModel_Arrange_HttpContextWihoutSid();
+
+        PostController postController = Arrange_Controller_WithMockHttpContext(mockRepo, mockNotyf, Arrange_Logger(), mockHttpContext);
+
+        EditPostViewModel mockModel = Arrange_EditPostViewModel_New();
+
+        // Act
+        // Assert
+        Assert.ThrowsAsync<Exception>(() => Act_EditPost_Post(postController, mockModel));
+        Assert_PostRepository_NeverInteracted(mockRepo);
+    }
+
+    private static Mock<HttpContext> EditPostWithModel_Arrange_HttpContextWihoutSid()
+    {
+        Mock<HttpContext> mockHttpContext = new();
+        mockHttpContext.Setup(m => m.User.Claims).Returns(new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, MockNameIdentifier)
+        });
+        return mockHttpContext;
+    }
+
+    private PostController Arrange_Controller_WithMockHttpContext(Mock<IPostRepository> mockRepo, Mock<INotyfService> mockNotyf, Mock<ILogger<PostController>> mockLogger, Mock<HttpContext> mockHttpContext)
+    {
+        PostController postController = new(mockRepo.Object, mockNotyf.Object, mockLogger.Object)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = mockHttpContext.Object
+            }
+        };
+        return postController;
     }
 
     [Test]
@@ -80,7 +140,8 @@ public class PostControllerTests
         }
         
         Mock<INotyfService> mockNotyf = Arrange_Notyf();
-        PostController controller = Arrange_Controller(mockRepo, mockNotyf, Arrange_Logger());
+        Mock<HttpContext> mockHttpContext = EditPostWithModel_Arrange_HttpContextWithProperClaim();
+        PostController controller = Arrange_Controller_WithMockHttpContext(mockRepo, mockNotyf, Arrange_Logger(), mockHttpContext);
 
         // Act
         Assert.DoesNotThrowAsync(() => controller.EditPost(viewModel));
@@ -226,10 +287,11 @@ public class PostControllerTests
         return mockRepo;
     }
 
-    private static Post Arrange_Post_FromMockViewModel(EditPostViewModel mockModel)
+    private static Post Arrange_Post_FromMockViewModel(EditPostViewModel mockModel, int authorId)
     {
         Post mockEntity = new()
         {
+            AuthorId = authorId,
             Title = mockModel.PostTitle!,
             Content = mockModel.PostContent!
         };
@@ -262,7 +324,9 @@ public class PostControllerTests
     {
         mockRepo.Verify(m =>
                 m.Create(It.Is<Post>(p =>
-                    p.Title == mockEntity.Title && p.Content == mockEntity.Content))
+                    p.Title == mockEntity.Title 
+                    && p.Content == mockEntity.Content
+                    && p.AuthorId == mockEntity.AuthorId))
             , Times.Once);
     }
 
