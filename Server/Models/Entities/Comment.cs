@@ -17,6 +17,11 @@ public partial class Comment
 
     public DateTime? UpdatedTime { get; set; }
 
+    /// <summary>
+    /// P, B, N
+    /// </summary>
+    public string Type { get; set; } = null!;
+
     public virtual User Author { get; set; } = null!;
 
     public virtual Post Post { get; set; } = null!;

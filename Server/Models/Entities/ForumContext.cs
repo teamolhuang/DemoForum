@@ -42,9 +42,12 @@ public partial class ForumContext : DbContext
             entity.HasIndex(e => new { e.PostId, e.CreatedTime }, "Comment_PostId_CreatedTime_index");
 
             entity.Property(e => e.Content)
-                .HasMaxLength(100)
-                .IsUnicode(false);
+                .HasMaxLength(100);
             entity.Property(e => e.CreatedTime).HasColumnType("datetime");
+            entity.Property(e => e.Type)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .HasComment("P, B, N");
             entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
 
             entity.HasOne(d => d.Author).WithMany(p => p.Comments)

@@ -16,11 +16,11 @@
     <form>
     @if (isLogon)
     {
-        <button class="button-green" type="submit" asp-action="GetNewEditor" asp-controller="Post">發表新文章</button>
+        <button class="button-cyan" type="submit" asp-action="GetNewEditor" asp-controller="Post">發表新文章</button>
     }
     else
     {
-        <button class="button-green" type="submit" asp-action="GetLogin" asp-controller="User">登入</button>
+        <button class="button-cyan" type="submit" asp-action="GetLogin" asp-controller="User">登入</button>
         <button type="submit" asp-action="GetRegister" asp-controller="User">註冊</button>
     }
     </form>

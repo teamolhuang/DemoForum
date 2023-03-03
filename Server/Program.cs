@@ -29,6 +29,7 @@ builder.Services.AddLogging();
 builder.Services.AddScoped<ForumContext, ForumContext>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 // Add cookie auth for sign-in
 builder.Services.AddAuthentication(options =>

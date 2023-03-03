@@ -4,10 +4,12 @@
     --color-bg-input: #171717;
     --color-button-bg: #606060;
     --color-button-bg-hover: #808080;
-    --color-button-bg-confirm: #006000;
-    --color-button-bg-confirm-hover: #008000;
-    --color-button-bg-cancel: #600000;
-    --color-button-bg-cancel-hover: #800000;
+    --color-button-bg-cyan: #236464;
+    --color-button-bg-cyan-hover: #377a7a;
+    --color-button-bg-red: #752a2a;
+    --color-button-bg-red-hover: #a94f4f;
+    --color-button-bg-yellow: #696926;
+    --color-button-bg-yellow-hover: #797935;
     --color-text: #AAAAAA;
     --color-text-title: #CCCCCC;
     --color-link: #619cc9;
@@ -57,24 +59,34 @@ button:hover {
     background-color: var(--color-button-bg-hover);
 }
 
-.button-green {
-    background-color: var(--color-button-bg-confirm);
+.button-cyan {
+    background-color: var(--color-button-bg-cyan);
     color: var(--color-text);
     transition: 0.3s;
 }
 
-.button-green:hover {
-    background-color: var(--color-button-bg-confirm-hover);
+.button-cyan:hover {
+    background-color: var(--color-button-bg-cyan-hover);
 }
 
 .button-red {
-    background-color: var(--color-button-bg-cancel);
+    background-color: var(--color-button-bg-red);
     color: var(--color-text);
     transition: 0.3s;
 }
 
 .button-red:hover {
-    background-color: var(--color-button-bg-cancel-hover);
+    background-color: var(--color-button-bg-red-hover);
+}
+
+.button-yellow {
+    background-color: var(--color-button-bg-yellow);
+    color: var(--color-text);
+    transition: 0.3s;
+}
+
+.button-yellow:hover {
+    background-color: var(--color-button-bg-yellow-hover);
 }
 
 input[type="text"], textarea, input[type="password"] {
@@ -123,6 +135,11 @@ button {
     opacity: 80%;
     color: var(--color-text);
     background-color: var(--color-view-item-bg);
+}
+
+/* Fonts */
+button {
+    font-weight: 500;
 }
 
 /* Error Message */

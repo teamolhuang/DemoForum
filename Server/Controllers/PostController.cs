@@ -135,27 +135,34 @@ public class PostController : Controller
     public async Task<IActionResult> Read(int id)
     {
         Post? post = await _postRepository.Read(id);
+        PostViewModel postViewModel = null!;
 
         if (post == null)
         {
             _notyfService.Error("點擊的文章似乎已被刪除 ...");
-            return View();
         }
-        
-        PostViewModel postViewModel = new()
+        else
         {
-            Id = post.Id,
-            Title = post.Title,
-            Content = post.Content,
-            CreatedTime = post.CreatedTime.ToString(CultureInfo.CurrentCulture),
-            AuthorName = post.Author.Username,
-            UpdatedTime = post.UpdatedTime?.ToString(CultureInfo.CurrentCulture)
-        };
+            postViewModel = new()
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Content = post.Content,
+                CreatedTime = post.CreatedTime.ToString(CultureInfo.CurrentCulture),
+                AuthorName = post.Author.Username,
+                UpdatedTime = post.UpdatedTime?.ToString(CultureInfo.CurrentCulture)
+            };
+        }
+
+        ViewResult view = View(postViewModel);
+        view.ViewData["PushChinese"] = CommentMode.Push.GetChinese();
+        view.ViewData["BooChinese"] = CommentMode.Boo.GetChinese();
+        view.ViewData["NaturalChinese"] = CommentMode.Natural.GetChinese();
         
-        return View(postViewModel);
+        return view;
     }
 
-    public async Task<IActionResult> Read(DeletePostConfirmationViewModel model)
+    public async Task<IActionResult> ReadFromDeletePostConfirmation(DeletePostConfirmationViewModel model)
     {
         if (model.PostId == null)
         {

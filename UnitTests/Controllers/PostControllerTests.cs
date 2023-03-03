@@ -197,6 +197,7 @@ public class PostControllerTests
         PostViewModel viewModel = actual
             .AssertAsViewModel<PostViewModel>();
         Assert_Read_ResultIsSameAsEntity(title, content, viewModel, mockPost);
+        Assert_Read_ViewBagHasCommentChinese(actual);
     }
 
     [Test]
@@ -215,6 +216,15 @@ public class PostControllerTests
         // Assert
         Assert_PostRepository_ReadOnce(id, mockRepo);
         Assert_Read_ViewModelIsNull(actual);
+        Assert_Read_ViewBagHasCommentChinese(actual);
+    }
+
+    private static void Assert_Read_ViewBagHasCommentChinese(IActionResult actual)
+    {
+        ViewResult viewResult = actual.AssertAsViewResult();
+        Assert.AreEqual(CommentMode.Push.GetChinese(), viewResult.ViewData["PushChinese"]);
+        Assert.AreEqual(CommentMode.Boo.GetChinese(), viewResult.ViewData["BooChinese"]);
+        Assert.AreEqual(CommentMode.Natural.GetChinese(), viewResult.ViewData["NaturalChinese"]);
     }
 
     [Test]
@@ -226,7 +236,7 @@ public class PostControllerTests
         DeletePostConfirmationViewModel viewModel = Arrange_DeletePostConfirmationViewModelFromId(null);
 
         // Act
-        IActionResult actual = await controller.Read(viewModel);
+        IActionResult actual = await controller.ReadFromDeletePostConfirmation(viewModel);
 
         // Assert
         Assert_Notyf_ErrorAtLeastOnce(mockNotyf);
@@ -243,7 +253,7 @@ public class PostControllerTests
         DeletePostConfirmationViewModel viewModel = Arrange_DeletePostConfirmationViewModelFromId(mockPost.Id);
 
         // Act
-        IActionResult actual = await controller.Read(viewModel);
+        IActionResult actual = await controller.ReadFromDeletePostConfirmation(viewModel);
 
         // Assert
         Assert_PostRepository_ReadOnce(mockPost.Id, mockRepo);

@@ -8,44 +8,25 @@ using NUnit.Framework;
 
 namespace DemoForumTests.Repositories;
 
-public class UserRepositoryTests
+public class UserRepositoryTests : InMemoryDbSetup
 {
-    private ForumContext _forumContext = null!;
-    
-    [SetUp]
-    public void SetUp()
-    {
-        DbContextOptions<ForumContext> inMemoryOptions = new DbContextOptionsBuilder<ForumContext>()
-            .UseInMemoryDatabase(DateTime.Now.Ticks.ToString())
-            .EnableSensitiveDataLogging()
-            .Options;
-
-        _forumContext = new ForumContext(inMemoryOptions);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        _forumContext.Dispose(); 
-    }
-
     [Test]
     [TestCase("Babby", "12345678")]
     [TestCase("Pikachu", "111000999")]
     public async Task Create_WillCheckNotExistAndHashPassword_AndReturnRegisteredEntity(string username, string password)
     {
         // Arrange
-        IUserRepository userRepository = Arrange_Repo(_forumContext);
+        IUserRepository userRepository = Arrange_Repo(ForumContext);
         
         User input = Arrange_UserObject(username, password);
 
-        Arrange_EnsureEmptyDb(_forumContext);
+        Arrange_EnsureEmptyDb(ForumContext);
 
         // Act
         User actual = await Create_Act(userRepository, input);
 
         // Assert
-        User entity = Create_Assert_EntityOfUsernameExists(_forumContext, input.Username);
+        User entity = Create_Assert_EntityOfUsernameExists(ForumContext, input.Username);
         Create_Assert_InputAndResultAreSameObjects(input, entity, actual);
         Create_Assert_InputObjectHasPasswordReplaced(input, actual);
         Create_Assert_PasswordIsEncrypted(password, actual);
@@ -58,9 +39,9 @@ public class UserRepositoryTests
         string overridePassword)
     {
         // Arrange
-        IUserRepository userRepository = Arrange_Repo(_forumContext);
+        IUserRepository userRepository = Arrange_Repo(ForumContext);
         User original = Arrange_UserObject(username, password);
-        Arrange_EnsureExistingAsOnlyOneInDb(_forumContext, original);
+        Arrange_EnsureExistingAsOnlyOneInDb(ForumContext, original);
         User input = Arrange_UserObject(username, overridePassword);
 
         // Act
@@ -68,7 +49,7 @@ public class UserRepositoryTests
 
         // Assert
         // Making it async call here is unnecessary, only makes the code complicated, hence the #pragma
-        User entity = Create_Assert_EntityOfUsernameExists(_forumContext, original.Username);
+        User entity = Create_Assert_EntityOfUsernameExists(ForumContext, original.Username);
         Create_Assert_EntityIsNotOverriden(original, entity, input);
     }
 
@@ -78,9 +59,9 @@ public class UserRepositoryTests
     public async Task Read_WillQueryDb_AndReturnFoundEntity(string username, string password)
     {
         // Arrange
-        IUserRepository userRepository = Arrange_Repo(_forumContext);
+        IUserRepository userRepository = Arrange_Repo(ForumContext);
         User input = Arrange_UserObject(username, password);
-        Arrange_EnsureExistingAsOnlyOneInDb(_forumContext, input);
+        Arrange_EnsureExistingAsOnlyOneInDb(ForumContext, input);
         
         // Act
         User? actual = await userRepository.Read(username);
@@ -101,9 +82,9 @@ public class UserRepositoryTests
         string password, string loginUsername, string loginPassword)
     {
         // Arrange
-        IUserRepository userRepository = Arrange_Repo(_forumContext);
+        IUserRepository userRepository = Arrange_Repo(ForumContext);
         User entity = Arrange_UserObject(username, password);
-        Arrange_EnsureExistingAsOnlyOneInDb(_forumContext, entity);
+        Arrange_EnsureExistingAsOnlyOneInDb(ForumContext, entity);
         User input = Arrange_UserObject(loginUsername, loginPassword);
         
         // Act
