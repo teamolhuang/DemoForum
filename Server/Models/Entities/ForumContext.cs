@@ -20,7 +20,9 @@ public partial class ForumContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
+        {
             optionsBuilder.UseSqlServer("Name=ConnectionStrings:DemoForum");
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

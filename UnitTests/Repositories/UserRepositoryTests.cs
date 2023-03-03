@@ -17,6 +17,7 @@ public class UserRepositoryTests
     {
         DbContextOptions<ForumContext> inMemoryOptions = new DbContextOptionsBuilder<ForumContext>()
             .UseInMemoryDatabase(DateTime.Now.Ticks.ToString())
+            .EnableSensitiveDataLogging()
             .Options;
 
         _forumContext = new ForumContext(inMemoryOptions);
@@ -139,7 +140,7 @@ public class UserRepositoryTests
     private void Arrange_EnsureExistingAsOnlyOneInDb(ForumContext forumContext, User input)
     {
         forumContext.Users.Add(new User
-            { Username = input.Username, Password = BCrypt.Net.BCrypt.HashPassword(input.Password) });
+            { Username = input.Username, Password = BCrypt.Net.BCrypt.HashPassword(input.Password), Version = BitConverter.GetBytes(DateTimeOffset.Now.ToUnixTimeMilliseconds()) });
         forumContext.SaveChanges();
         Assert.AreEqual(1, forumContext.Users.Count());
         User entity = forumContext.Users.First();
@@ -152,7 +153,8 @@ public class UserRepositoryTests
         User input = new()
         {
             Username = username,
-            Password = password
+            Password = password,
+            Version = ExtensionMethods.GetNowTimestamp()
         };
         return input;
     }

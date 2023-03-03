@@ -19,12 +19,19 @@ namespace DemoForumTests.Controllers;
 
 public class PostControllerTests
 {
+    private const int MockPostId = 1;
     private const string MockPostTitle = "MockTitle";
     private const string MockPostContent = "MockContent";
+    private const string MockPostTitleChanged = "The Title is changed!";
+    private const string MockPostContentChanged = "A whole new content!";
     private const string PostSuccessMessage = "發文成功！";
 
     private const int MockSid = 645;
     private const string MockNameIdentifier = "MockUsername";
+
+    private const string MockUsername = "MockUsername";
+    private const string MockUserPassword = "MockPassword";
+    private const int MockUserId = 1;
     
     [Test]
     public async Task EditPostWithModel_WillCheckNewPostIsCorrect_AndCreateToDBAndRedirectToIndex()
@@ -36,7 +43,7 @@ public class PostControllerTests
 
         PostController postController = Arrange_Controller_WithMockHttpContext(mockRepo, mockNotyf, Arrange_Logger(), mockHttpContext);
 
-        EditPostViewModel mockModel = Arrange_EditPostViewModel_New();
+        EditorViewModel mockModel = Arrange_EditPostViewModel_New();
         Post mockEntity = Arrange_Post_FromMockViewModel(mockModel, MockSid);
 
         // Act
@@ -67,11 +74,11 @@ public class PostControllerTests
         // Arrange
         Mock<IPostRepository> mockRepo = Arrange_Repo();
         Mock<INotyfService> mockNotyf = Arrange_Notyf();
-        Mock<HttpContext> mockHttpContext = EditPostWithModel_Arrange_HttpContextWihoutSid();
+        Mock<HttpContext> mockHttpContext = EditPostWithModel_Arrange_HttpContextWithoutSid();
 
         PostController postController = Arrange_Controller_WithMockHttpContext(mockRepo, mockNotyf, Arrange_Logger(), mockHttpContext);
 
-        EditPostViewModel mockModel = Arrange_EditPostViewModel_New();
+        EditorViewModel mockModel = Arrange_EditPostViewModel_New();
 
         // Act
         // Assert
@@ -80,7 +87,7 @@ public class PostControllerTests
         Assert_Notyf_ErrorAtLeastOnce(mockNotyf);
     }
 
-    private static Mock<HttpContext> EditPostWithModel_Arrange_HttpContextWihoutSid()
+    private static Mock<HttpContext> EditPostWithModel_Arrange_HttpContextWithoutSid()
     {
         Mock<HttpContext> mockHttpContext = new();
         mockHttpContext.Setup(m => m.User.Claims).Returns(new List<Claim>
@@ -108,14 +115,14 @@ public class PostControllerTests
         // Arrange
         Mock<IPostRepository> mockRepo = Arrange_Repo();
         PostController controller = Arrange_Controller(mockRepo, Arrange_Notyf(), Arrange_Logger());
-        EditPostViewModel viewModel = new();
+        EditorViewModel viewModel = new();
         controller.ModelState.AddModelMockError();
 
         // Act
         IActionResult actual = await Act_EditPost_Post(controller, viewModel);
 
         // Assert
-        actual.AssertAsExactViewModel(viewModel, "EditPost");
+        actual.AssertAsExactViewModel(viewModel, "Editor");
         Assert_PostRepository_NeverInteracted(mockRepo);
     }
 
@@ -126,7 +133,7 @@ public class PostControllerTests
     {
         // Arrange
         Mock<IPostRepository> mockRepo = Arrange_Repo();
-        EditPostViewModel viewModel;
+        EditorViewModel viewModel;
         switch (postMode)
         {
             case PostMode.Edit:
@@ -145,7 +152,7 @@ public class PostControllerTests
         PostController controller = Arrange_Controller_WithMockHttpContext(mockRepo, mockNotyf, Arrange_Logger(), mockHttpContext);
 
         // Act
-        Assert.DoesNotThrowAsync(() => controller.EditPost(viewModel));
+        Assert.DoesNotThrowAsync(() => controller.PostEditResult(viewModel));
         
         // Assert
         mockRepo.VerifyAll();
@@ -158,22 +165,6 @@ public class PostControllerTests
     }
 
     [Test]
-    public void GetEditEditor_WillCreateView_AndReturnEditMode()
-    {
-        // Arrange
-        PostController controller = Arrange_Controller_Default();
-
-        // Act
-        IActionResult actual = controller.GetEditEditor();
-
-        // Assert
-        EditPostViewModel editPostViewModel = actual
-            .AssertAsViewResult("EditPost")
-            .AssertAsViewModel<EditPostViewModel>();
-        Assert_ViewModel_PostMode(editPostViewModel, PostMode.Edit);
-    }
-
-    [Test]
     public void GetNewEditor_WillCreateView_AndReturnNewMode()
     {
         // Arrange
@@ -183,10 +174,10 @@ public class PostControllerTests
         IActionResult actual = controller.GetNewEditor();
 
         // Assert
-        EditPostViewModel editPostViewModel = actual
-            .AssertAsViewResult("EditPost")
-            .AssertAsViewModel<EditPostViewModel>();
-        Assert_ViewModel_PostMode(editPostViewModel, PostMode.New);
+        EditorViewModel editorViewModel = actual
+            .AssertAsViewResult("Editor")
+            .AssertAsViewModel<EditorViewModel>();
+        Assert_ViewModel_PostMode(editorViewModel, PostMode.New);
     }
 
     [Test]
@@ -227,6 +218,98 @@ public class PostControllerTests
         Assert_Read_ViewModelIsNull(actual);
     }
 
+    [Test]
+    public async Task EditPost_WillQueryById_AndReturnEditorViewWithContents()
+    {
+        // Arrange
+        Mock<IPostRepository> mockRepo = new();
+        PostController postController = Arrange_Controller(mockRepo, Arrange_Notyf(), Arrange_Logger());
+        PostViewModel postViewModel = Arrange_PostViewModel();
+        Post expectedPost = Arrange_Post(MockPostTitleChanged, MockPostContentChanged);
+        EditPost_Arrange_MockRepoReturnsPostById(mockRepo, postViewModel.Id, expectedPost);
+
+        // Act
+        IActionResult actual = await postController.EditPost(postViewModel);
+
+        // Assert
+        mockRepo.VerifyAll();
+        Assert.AreEqual(expectedPost.Id, postViewModel.Id);
+        EditPost_Assert_EditorViewModelIsCorrect(actual, expectedPost);
+    }
+
+    [Test]
+    public void EditPost_WillCheckInputPostId_AndThrowNullReferenceExceptionIfIdIsNull()
+    {
+        // Arrange
+        Mock<IPostRepository> mockRepo = new();
+        PostController postController = Arrange_Controller(mockRepo, Arrange_Notyf(), Arrange_Logger());
+        PostViewModel postViewModel = Arrange_PostViewModel_NoId();
+
+        // Act
+        Assert.ThrowsAsync<NullReferenceException>(() => postController.EditPost(postViewModel));
+
+        // Assert
+        mockRepo.VerifyNoOtherCalls();
+    }
+    
+    [Test]
+    public void EditPost_WillQueryForPost_AndThrowNullReferenceExceptionIfNotFound()
+    {
+        // Arrange
+        Mock<IPostRepository> mockRepo = new();
+        PostController postController = Arrange_Controller(mockRepo, Arrange_Notyf(), Arrange_Logger());
+        PostViewModel postViewModel = Arrange_PostViewModel();
+        EditPost_Arrange_MockRepoReturnsPostById(mockRepo, postViewModel.Id, null);
+        
+        // Act
+        Assert.ThrowsAsync<NullReferenceException>(() => postController.EditPost(postViewModel));
+
+        // Assert
+        mockRepo.VerifyAll();
+    }
+
+    private static void EditPost_Assert_EditorViewModelIsCorrect(IActionResult actual, Post expectedPost)
+    {
+        EditorViewModel editorViewModel = actual.AssertAsViewModel<EditorViewModel>();
+        Assert.AreEqual(expectedPost.Id, editorViewModel.EntityId);
+        Assert.AreEqual(MockPostTitleChanged, editorViewModel.PostTitle);
+        Assert.AreEqual(MockPostContentChanged, editorViewModel.PostContent);
+        Assert.AreEqual(PostMode.Edit, editorViewModel.PostMode);
+    }
+
+    private void EditPost_Arrange_MockRepoReturnsPostById(Mock<IPostRepository> mockRepo
+        , int? postViewModelId
+        , Post? mockPost)
+    {
+        mockRepo
+            .Setup(m => m.Read(postViewModelId ?? -1))
+            .ReturnsAsync(mockPost);
+    }
+
+    private static PostViewModel Arrange_PostViewModel()
+    {
+        PostViewModel postViewModel = new()
+        {
+            Id = MockPostId,
+            Title = MockPostTitle,
+            Content = MockPostContent,
+            AuthorName = MockUsername
+        };
+        return postViewModel;
+    }
+    
+    private static PostViewModel Arrange_PostViewModel_NoId()
+    {
+        PostViewModel postViewModel = new()
+        {
+            Id = null,
+            Title = MockPostTitle,
+            Content = MockPostContent,
+            AuthorName = MockUsername
+        };
+        return postViewModel;
+    }
+
     private static void Assert_Read_ViewModelIsNull(IActionResult actual)
     {
         Assert.IsNull(actual.AssertAsViewResult().Model);
@@ -244,9 +327,22 @@ public class PostControllerTests
     {
         return new Post
         {
+            Id = MockPostId,
             Title = title,
             Content = content,
-            CreatedTime = DateTime.Now
+            CreatedTime = DateTime.Now,
+            Author = Arrange_User(MockUserId, MockUsername, MockUserPassword),
+            AuthorId = MockUserId
+        };
+    }
+
+    private User Arrange_User(int id, string username, string password)
+    {
+        return new User
+        {
+            Id = id,
+            Username = username,
+            Password = password
         };
     }
 
@@ -288,7 +384,7 @@ public class PostControllerTests
         return mockRepo;
     }
 
-    private static Post Arrange_Post_FromMockViewModel(EditPostViewModel mockModel, int authorId)
+    private static Post Arrange_Post_FromMockViewModel(EditorViewModel mockModel, int authorId)
     {
         Post mockEntity = new()
         {
@@ -299,9 +395,9 @@ public class PostControllerTests
         return mockEntity;
     }
 
-    private static EditPostViewModel Arrange_EditPostViewModel_New()
+    private static EditorViewModel Arrange_EditPostViewModel_New()
     {
-        EditPostViewModel mockModel = new()
+        EditorViewModel mockModel = new()
         {
             PostTitle = MockPostTitle,
             PostContent = MockPostContent,
@@ -310,9 +406,9 @@ public class PostControllerTests
         return mockModel;
     }
     
-    private static EditPostViewModel Arrange_EditPostViewModel_Edit()
+    private static EditorViewModel Arrange_EditPostViewModel_Edit()
     {
-        EditPostViewModel mockModel = new()
+        EditorViewModel mockModel = new()
         {
             PostTitle = MockPostTitle,
             PostContent = MockPostContent,
@@ -342,15 +438,15 @@ public class PostControllerTests
         mockRepo.VerifyNoOtherCalls();
     }
 
-    private static async Task<IActionResult> Act_EditPost_Post(PostController controller, EditPostViewModel viewModel)
+    private static async Task<IActionResult> Act_EditPost_Post(PostController controller, EditorViewModel viewModel)
     {
-        return await controller.EditPost(viewModel);
+        return await controller.PostEditResult(viewModel);
     }
 
 
-    private void Assert_ViewModel_PostMode(EditPostViewModel editPostViewModel, PostMode postMode)
+    private void Assert_ViewModel_PostMode(EditorViewModel editorViewModel, PostMode postMode)
     {
-        Assert.AreEqual(postMode, editPostViewModel.PostMode);
+        Assert.AreEqual(postMode, editorViewModel.PostMode);
     }
 
     private static PostController Arrange_Controller_Default()

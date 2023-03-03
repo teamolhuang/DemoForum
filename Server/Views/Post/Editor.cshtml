@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model EditPostViewModel
+@model EditorViewModel
 
 @{
     ViewData["Title"] = $"{Model.PostModeString}文章";
@@ -12,7 +12,7 @@
     <title>@ViewData["Title"]</title>
 </head>
 <body>
-<form asp-controller="Post" asp-action="EditPost" method="post">
+<form asp-controller="Post" asp-action="PostEditResult" method="post">
     <h2 legend>@ViewData["Title"]</h2>
 
     <hr/>
@@ -31,7 +31,8 @@
 
     <hr/>
 
-    <!-- To keep PostMode the same value when a postback happens -->
+    <!-- To keep these values between Postback or posting... -->
+    @Html.HiddenFor(model => model.EntityId)
     @Html.HiddenFor(model => model.PostMode)
 
     <div class="submit">

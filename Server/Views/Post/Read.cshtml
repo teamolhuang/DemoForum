@@ -1,7 +1,12 @@
-﻿@model PostViewModel?
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model PostViewModel?
 
 @{
     bool isValid = Model != null;
+    bool isLogon = User.Identity?.IsAuthenticated ?? false;
+    string? logonUsername = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+    bool isByUser = isValid && isLogon && Model!.AuthorName == logonUsername;
 }
 
 <!DOCTYPE html>
@@ -12,12 +17,24 @@
 </head>
 <body>
 <div>
-    <h6><a>@Html.ActionLink("回首頁", "Index", "Home", null)</a></h6>
+    <div style="display: flex; justify-content: space-between">
+        <form method="get">
+            <button type="submit" asp-action="Index" asp-controller="Home">回首頁</button>
+        </form>
+        @if (isByUser)
+        {
+            <form asp-controller="Post" method="post">
+                @Html.HiddenFor(model => model!.Id)
+                <button type="submit" asp-action="EditPost">修改文章</button>
+            </form>
+        }
+    </div>
     <hr/>
     @if (isValid)
     {
         <h2 class="post-title" legend>@Model!.Title</h2>
-        <p class="post-info" style="display: inline">@Model.CreatedTime)</p>
+        <p class="post-info" style="border-right: 12px">作者：@Model.AuthorName</p><br/>
+        <p class="post-info" style="display: inline; position: relative; top: -5px">時間：@Model.CreatedTime</p>
         <hr/>
         <h5>@Model.Content</h5>
     }

@@ -3,7 +3,7 @@ using DemoForum.Enums;
 
 namespace DemoForum.Models;
 
-public class EditPostViewModel
+public class EditorViewModel
 {
     public int EntityId { get; set; }
 

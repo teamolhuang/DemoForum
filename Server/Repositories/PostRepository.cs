@@ -24,12 +24,23 @@ public class PostRepository : IPostRepository
 
     public async Task<Post?> Read(int key)
     {
-        return await _context.Posts.FirstOrDefaultAsync(p => p.Id == key);
+        return await _context.Posts
+            .Include(p => p.Author)
+            .FirstOrDefaultAsync(p => p.Id == key);
     }
 
-    public Task<Post> Update(int key, Post obj)
+    public async Task<Post> Update(int key, Post obj)
     {
-        throw new NotImplementedException();
+        Post? original = await Read(key);
+        if (original == null)
+            throw new NullReferenceException("Specified post id not found in DB!");
+
+        original.Title = obj.Title;
+        original.Content = obj.Content;
+        
+        _context.Posts.Update(original);
+        await _context.SaveChangesAsync();
+        return original;
     }
 
     public Task<Post> Delete(int key)

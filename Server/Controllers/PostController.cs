@@ -26,10 +26,10 @@ public class PostController : Controller
 
     [HttpPost("Edit")]
     [Authorize]
-    public async Task<IActionResult> EditPost(EditPostViewModel editPost)
+    public async Task<IActionResult> PostEditResult(EditorViewModel editor)
     {
         if (!ModelState.IsValid)
-            return EditorView(editPost);
+            return EditorView(editor);
         
         string? sidString = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
         
@@ -41,15 +41,15 @@ public class PostController : Controller
             
             Post entity = new()
             {
-                Title = editPost.PostTitle!,
-                Content = editPost.PostContent!,
+                Title = editor.PostTitle!,
+                Content = editor.PostContent!,
                 AuthorId = sidInt
             };
             
-            switch (editPost.PostMode)
+            switch (editor.PostMode)
             {
                 case PostMode.Edit:
-                    await _postRepository.Update(editPost.EntityId, entity);
+                    await _postRepository.Update(editor.EntityId, entity);
                     break;
                 case PostMode.New:
                 default:
@@ -61,7 +61,7 @@ public class PostController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogError($"GetEditEditor failed, mode {editPost.PostMode}, {editPost}");
+            _logger.LogError($"GetEditEditor failed, mode {editor.PostMode}, {editor}");
             _logger.LogError($"Cookie sidString: {sidString}");
             _logger.LogError(e.ToString());
             _notyfService.Error("發文失敗，請通知網站管理員 ...");
@@ -71,11 +71,24 @@ public class PostController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    [HttpGet("Edit")]
+    [HttpPost]
     [Authorize]
-    public IActionResult GetEditEditor()
+    public async Task<IActionResult> EditPost(PostViewModel postViewModel)
     {
-        return EditorView(PostMode.Edit);
+        Post? post = await _postRepository.Read(postViewModel.Id ?? throw new NullReferenceException("Post id is null!"));
+        if (post == null)
+            throw new NullReferenceException("欲修改的文章查無資料，可能已被刪除 ...");
+        
+        EditorViewModel editViewModel = new()
+        {
+            EntityId = post.Id,
+            PostTitle = post.Title,
+            PostContent = post.Content,
+            PostMode = PostMode.Edit
+        };
+
+        IActionResult result = EditorView(editViewModel);
+        return result;
     }
 
     [HttpGet("New")]
@@ -87,17 +100,17 @@ public class PostController : Controller
 
     private IActionResult EditorView(PostMode mode)
     {
-        EditPostViewModel editPostViewModel = new()
+        EditorViewModel editorViewModel = new()
         {
             PostMode = mode
         };
 
-        return EditorView(editPostViewModel);
+        return EditorView(editorViewModel);
     }
     
-    private IActionResult EditorView(EditPostViewModel viewModel)
+    private IActionResult EditorView(EditorViewModel viewModel)
     {
-        return View("EditPost", viewModel);
+        return View("Editor", viewModel);
     }
 
     [HttpGet("Read/{id}")]
@@ -113,9 +126,11 @@ public class PostController : Controller
         
         PostViewModel postViewModel = new()
         {
+            Id = post.Id,
             Title = post.Title,
             Content = post.Content,
-            CreatedTime = post.CreatedTime.ToString(CultureInfo.CurrentCulture)
+            CreatedTime = post.CreatedTime.ToString(CultureInfo.CurrentCulture),
+            AuthorName = post.Author.Username
         };
         
         return View(postViewModel);

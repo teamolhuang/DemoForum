@@ -11,8 +11,11 @@ namespace DemoForumTests.Repositories;
 
 public class PostRepositoryTests
 {
+    private const int TestId = 1;
     private const string TestTitle = "TestTitle";
     private const string TestContent = "TestContent";
+    private const string TestTitleChanged = "A new title!";
+    private const string TestContentChanged = "A new content??";
     private ForumContext? _forumContext;
     
     private const string MockUsername = "MockUsername";
@@ -23,6 +26,7 @@ public class PostRepositoryTests
     {
         DbContextOptions<ForumContext> inMemoryOptions = new DbContextOptionsBuilder<ForumContext>()
             .UseInMemoryDatabase(DateTime.Now.Ticks.ToString())
+            .EnableSensitiveDataLogging()
             .Options;
 
         _forumContext = new ForumContext(inMemoryOptions);
@@ -84,7 +88,7 @@ public class PostRepositoryTests
         
         // Assert
         Assert_DbHasCorrectNumberOfData(1);
-        Assert_Read_IsSameAsQueried(actual);
+        Assert_IsSameAsDbFirst(actual);
     }
 
     [Test]
@@ -102,7 +106,47 @@ public class PostRepositoryTests
         Assert.IsNull(actual);
     }
 
-    private void Assert_Read_IsSameAsQueried(Post? actual)
+    [Test]
+    public async Task Update_WillUpdateExistingObject_AndReturnUpdatedEntity()
+    {
+        // Arrange
+        IPostRepository repo = Arrange_GetRepo();
+        Arrange_CheckDbEmpty();
+        await Arrange_PopulatePost(Arrange_Post());
+        Assert_DbHasCorrectNumberOfData(1);
+
+        Post changePost = Arrange_PostChanged();
+
+        // Act
+        Post actual = await repo.Update(changePost.Id, changePost);
+
+        // Assert
+        Assert_DbHasCorrectNumberOfData(1);
+        Assert_IsSameAsDbFirst(actual);
+    }
+    
+    [Test]
+    public void Update_WillQueryForObjectFirst_AndThrowNullReferenceExceptionIfNotFound()
+    {
+        // Arrange
+        IPostRepository repo = Arrange_GetRepo();
+        Arrange_CheckDbEmpty();
+
+        Post changePost = Arrange_PostChanged();
+
+        // Act
+        // Assert
+        Assert.ThrowsAsync<NullReferenceException>(() => repo.Update(changePost.Id, changePost));
+        Assert_DbHasCorrectNumberOfData(0);
+    }
+
+    private async Task Arrange_PopulatePost(Post arrangePost)
+    {
+        await _forumContext!.Posts.AddAsync(arrangePost);
+        await _forumContext.SaveChangesAsync();
+    }
+
+    private void Assert_IsSameAsDbFirst(Post? actual)
     {
         Assert.IsNotNull(actual);
         Assert.AreEqual(_forumContext!.Posts.First(), actual);
@@ -133,7 +177,8 @@ public class PostRepositoryTests
                 Content = DateTime.Now.Ticks.ToString(),
                 CreatedTime = DateTime.Now,
                 AuthorId = 1 + i,
-                Author = Arrange_MockUser(1 + i, MockUsername)
+                Author = Arrange_MockUser(1 + i, MockUsername),
+                Version = ExtensionMethods.GetNowTimestamp()
             });
         }
 
@@ -146,7 +191,8 @@ public class PostRepositoryTests
         {
             Id = mockUserId,
             Username = mockUsername,
-            Password = MockUserPassword
+            Password = MockUserPassword,
+            Version = ExtensionMethods.GetNowTimestamp()
         };
     }
 
@@ -171,10 +217,26 @@ public class PostRepositoryTests
     {
         Post post = new()
         {
+            Id = TestId,
             Title = TestTitle,
             Content = TestContent,
             AuthorId = 1,
-            Author = Arrange_MockUser(1, MockUsername)
+            Author = Arrange_MockUser(1, MockUsername),
+            Version = ExtensionMethods.GetNowTimestamp()
+        };
+        return post;
+    }
+    
+    private static Post Arrange_PostChanged()
+    {
+        Post post = new()
+        {
+            Id = TestId,
+            Title = TestTitleChanged,
+            Content = TestContentChanged,
+            AuthorId = 1,
+            Author = Arrange_MockUser(1, MockUsername),
+            Version = ExtensionMethods.GetNowTimestamp()
         };
         return post;
     }
