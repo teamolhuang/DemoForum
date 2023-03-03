@@ -37,7 +37,8 @@ public class PostRepository : IPostRepository
 
         original.Title = obj.Title;
         original.Content = obj.Content;
-        
+        original.UpdatedTime = DateTime.Now;
+
         _context.Posts.Update(original);
         await _context.SaveChangesAsync();
         return original;

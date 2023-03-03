@@ -148,7 +148,8 @@ public class PostController : Controller
             Title = post.Title,
             Content = post.Content,
             CreatedTime = post.CreatedTime.ToString(CultureInfo.CurrentCulture),
-            AuthorName = post.Author.Username
+            AuthorName = post.Author.Username,
+            UpdatedTime = post.UpdatedTime?.ToString(CultureInfo.CurrentCulture)
         };
         
         return View(postViewModel);

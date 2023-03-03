@@ -479,6 +479,9 @@ public class PostControllerTests
         Assert.AreEqual(title, viewModel.Title);
         Assert.AreEqual(content, viewModel.Content);
         Assert.AreEqual(mockPost.CreatedTime.ToString(CultureInfo.CurrentCulture), viewModel.CreatedTime);
+        Assert.NotNull(mockPost.UpdatedTime);
+        DateTime updatedTime = (DateTime)mockPost.UpdatedTime!;
+        Assert.AreEqual(updatedTime.ToString(CultureInfo.CurrentCulture), viewModel.UpdatedTime);
     }
 
     private Post Arrange_Post(string title, string content)
@@ -489,6 +492,7 @@ public class PostControllerTests
             Title = title,
             Content = content,
             CreatedTime = DateTime.Now,
+            UpdatedTime = DateTime.Now + TimeSpan.FromDays(1),
             Author = Arrange_User(MockUserId, MockUsername, MockUserPassword),
             AuthorId = MockUserId
         };

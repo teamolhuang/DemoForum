@@ -1,4 +1,7 @@
-﻿namespace DemoForum.Models.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace DemoForum.Models.Entities;
 
 public partial class User
 {
@@ -9,6 +12,8 @@ public partial class User
     public int Id { get; set; }
 
     public byte[] Version { get; set; } = null!;
+
+    public virtual ICollection<Comment> Comments { get; } = new List<Comment>();
 
     public virtual ICollection<Post> Posts { get; } = new List<Post>();
 }

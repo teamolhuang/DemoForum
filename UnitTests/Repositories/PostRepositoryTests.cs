@@ -123,8 +123,15 @@ public class PostRepositoryTests
         // Assert
         Assert_DbHasCorrectNumberOfData(1);
         Assert_IsSameAsDbFirst(actual);
+        Update_Assert_UpdatedTimeFilled(actual);
     }
-    
+
+    private static void Update_Assert_UpdatedTimeFilled(Post actual)
+    {
+        Assert.NotNull(actual.UpdatedTime);
+        Assert.Greater(actual.UpdatedTime, actual.CreatedTime);
+    }
+
     [Test]
     public void Update_WillQueryForObjectFirst_AndThrowNullReferenceExceptionIfNotFound()
     {
@@ -253,7 +260,8 @@ public class PostRepositoryTests
             Content = TestContent,
             AuthorId = 1,
             Author = Arrange_MockUser(1, MockUsername),
-            Version = ExtensionMethods.GetNowTimestamp()
+            Version = ExtensionMethods.GetNowTimestamp(),
+            CreatedTime = DateTime.Now
         };
         return post;
     }
@@ -267,7 +275,8 @@ public class PostRepositoryTests
             Content = TestContentChanged,
             AuthorId = 1,
             Author = Arrange_MockUser(1, MockUsername),
-            Version = ExtensionMethods.GetNowTimestamp()
+            Version = ExtensionMethods.GetNowTimestamp(),
+            UpdatedTime = DateTime.Now
         };
         return post;
     }

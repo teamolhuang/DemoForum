@@ -34,8 +34,12 @@
     @if (isValid)
     {
         <h2 class="post-title" legend>@Model!.Title</h2>
-        <p class="post-info" style="border-right: 12px">作者：@Model.AuthorName</p><br/>
-        <p class="post-info" style="display: inline; position: relative; top: -5px">時間：@Model.CreatedTime</p>
+        <p class="post-info">作者：@Model.AuthorName</p>
+        <br/><p class="post-info">發表時間：@Model.CreatedTime</p>
+        @if (Model.UpdatedTime != null)
+        {
+            <br/><p class="post-info">最後修改時間：@Model.UpdatedTime</p>
+        }
         <hr/>
         <h5>@Model.Content</h5>
     }

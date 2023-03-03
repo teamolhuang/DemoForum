@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace DemoForum.Models.Entities;
 
@@ -13,6 +15,8 @@ public partial class ForumContext : DbContext
     {
     }
 
+    public virtual DbSet<Comment> Comments { get; set; }
+
     public virtual DbSet<Post> Posts { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -20,14 +24,39 @@ public partial class ForumContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
-        {
             optionsBuilder.UseSqlServer("Name=ConnectionStrings:DemoForum");
-        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("forum");
+
+        modelBuilder.Entity<Comment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("Comment_pk");
+
+            entity.ToTable("Comment");
+
+            entity.HasIndex(e => e.Id, "Comment_Id_uindex").IsUnique();
+
+            entity.HasIndex(e => new { e.PostId, e.CreatedTime }, "Comment_PostId_CreatedTime_index");
+
+            entity.Property(e => e.Content)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedTime).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Author).WithMany(p => p.Comments)
+                .HasForeignKey(d => d.AuthorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Comment_User_Id_fk");
+
+            entity.HasOne(d => d.Post).WithMany(p => p.Comments)
+                .HasForeignKey(d => d.PostId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Comment_Post_Id_fk");
+        });
 
         modelBuilder.Entity<Post>(entity =>
         {
@@ -38,6 +67,7 @@ public partial class ForumContext : DbContext
             entity.Property(e => e.Content).HasMaxLength(2000);
             entity.Property(e => e.CreatedTime).HasColumnType("datetime");
             entity.Property(e => e.Title).HasMaxLength(20);
+            entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
             entity.Property(e => e.Version)
                 .IsRowVersion()
                 .IsConcurrencyToken();
