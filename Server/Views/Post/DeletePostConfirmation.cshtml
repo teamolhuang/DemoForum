@@ -1,0 +1,22 @@
+﻿@model DeletePostConfirmationViewModel
+
+<!DOCTYPE html>
+
+<html lang="zh-tw">
+<head>
+    <title>確定要刪除文章？</title>
+</head>
+<body>
+<div style="display: flex; justify-content: center; align-items: center; text-align: center">
+    <h3>確定要刪除文章？你要確定欸！</h3>
+</div>
+<hr/>
+<div style="display: flex; justify-content: center; align-items: center;">
+    <form asp-controller="Post" method="post">
+        @Html.HiddenFor(model => model!.PostId)
+        <button type="submit" asp-action="Read">取消</button>
+        <button class="button-red" type="submit" asp-action="Delete">對，我要刪</button>
+    </form>
+</div>
+</body>
+</html>

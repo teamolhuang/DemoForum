@@ -33,7 +33,7 @@ public class PostRepository : IPostRepository
     {
         Post? original = await Read(key);
         if (original == null)
-            throw new NullReferenceException("Specified post id not found in DB!");
+            throw new NullReferenceException($"Specified post id not found in DB! id: {key}");
 
         original.Title = obj.Title;
         original.Content = obj.Content;
@@ -43,9 +43,15 @@ public class PostRepository : IPostRepository
         return original;
     }
 
-    public Task<Post> Delete(int key)
+    public async Task<Post> Delete(int key)
     {
-        throw new NotImplementedException();
+        Post? original = await Read(key);
+        if (original == null)
+            throw new NullReferenceException($"Entity to be deleted already removed from DB. id: {key}");
+
+        _context.Posts.Remove(original);
+        await _context.SaveChangesAsync();
+        return original;
     }
 
     public async Task<IEnumerable<Post>> ReadLatest(int rows)

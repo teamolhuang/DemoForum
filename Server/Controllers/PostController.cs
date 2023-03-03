@@ -57,14 +57,14 @@ public class PostController : Controller
                     break;
             }
 
-            _notyfService.Success("發文成功！");
+            _notyfService.Success($"{editor.PostMode.GetChinese()}成功！");
         }
         catch (Exception e)
         {
             _logger.LogError($"GetEditEditor failed, mode {editor.PostMode}, {editor}");
             _logger.LogError($"Cookie sidString: {sidString}");
             _logger.LogError(e.ToString());
-            _notyfService.Error("發文失敗，請通知網站管理員 ...");
+            _notyfService.Error($"{editor.PostMode.GetChinese()}失敗，請通知網站管理員 ...");
             _notyfService.Error(HttpUtility.JavaScriptStringEncode(e.Message));
         }
 
@@ -96,6 +96,24 @@ public class PostController : Controller
     public IActionResult GetNewEditor()
     {
         return EditorView(PostMode.New);
+    }
+
+    [HttpPost("Delete")]
+    [Authorize]
+    public IActionResult DeletePostConfirmation(PostViewModel post)
+    {
+        if (post.Id == null)
+        {
+            _notyfService.Error("要刪除的文章似乎已被刪除 ...");
+            _logger.LogError("Tried to get deletePostConfirmation yet post.Id is null!");
+            return RedirectToAction("Index", "Home");
+        }
+        
+        DeletePostConfirmationViewModel viewModel = new()
+        {
+            PostId = post.Id
+        };
+        return View(viewModel);
     }
 
     private IActionResult EditorView(PostMode mode)
@@ -134,5 +152,41 @@ public class PostController : Controller
         };
         
         return View(postViewModel);
+    }
+
+    public async Task<IActionResult> Read(DeletePostConfirmationViewModel model)
+    {
+        if (model.PostId == null)
+        {
+            _notyfService.Error("就在你猶豫的時候，文章已經被刪除的樣子 ...");
+            return RedirectToAction("Index", "Home");
+        }
+        
+        IActionResult result 
+            = await Read((int)model.PostId);
+        return result;
+    }
+
+    [Authorize]
+    public async Task<IActionResult> Delete(DeletePostConfirmationViewModel model)
+    {
+        if (model.PostId != null)
+        {
+            try
+            {
+                await _postRepository.Delete((int)model.PostId);
+            }
+            catch (NullReferenceException nre)
+            {
+                _logger.LogInformation(nre.Message);
+            }
+        }
+        else
+        {
+            _logger.LogWarning("Delete received a DeletePostConfirmation with null PostId.");
+        }
+
+        _notyfService.Success("文章刪除成功。");
+        return RedirectToAction("Index", "Home");
     }
 }

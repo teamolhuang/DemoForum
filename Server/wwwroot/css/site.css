@@ -4,6 +4,10 @@
     --color-bg-input: #171717;
     --color-button-bg: #606060;
     --color-button-bg-hover: #808080;
+    --color-button-bg-confirm: #006000;
+    --color-button-bg-confirm-hover: #008000;
+    --color-button-bg-cancel: #600000;
+    --color-button-bg-cancel-hover: #800000;
     --color-text: #AAAAAA;
     --color-text-title: #CCCCCC;
     --color-link: #619cc9;
@@ -51,6 +55,26 @@ button {
 
 button:hover {
     background-color: var(--color-button-bg-hover);
+}
+
+.button-green {
+    background-color: var(--color-button-bg-confirm);
+    color: var(--color-text);
+    transition: 0.3s;
+}
+
+.button-green:hover {
+    background-color: var(--color-button-bg-confirm-hover);
+}
+
+.button-red {
+    background-color: var(--color-button-bg-cancel);
+    color: var(--color-text);
+    transition: 0.3s;
+}
+
+.button-red:hover {
+    background-color: var(--color-button-bg-cancel-hover);
 }
 
 input[type="text"], textarea, input[type="password"] {

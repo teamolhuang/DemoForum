@@ -26,6 +26,7 @@
             <form asp-controller="Post" method="post">
                 @Html.HiddenFor(model => model!.Id)
                 <button type="submit" asp-action="EditPost">修改文章</button>
+                <button type="submit" asp-action="DeletePostConfirmation">刪除文章</button>
             </form>
         }
     </div>

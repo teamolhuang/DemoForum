@@ -24,7 +24,6 @@ public class PostControllerTests
     private const string MockPostContent = "MockContent";
     private const string MockPostTitleChanged = "The Title is changed!";
     private const string MockPostContentChanged = "A whole new content!";
-    private const string PostSuccessMessage = "發文成功！";
 
     private const int MockSid = 645;
     private const string MockNameIdentifier = "MockUsername";
@@ -50,7 +49,7 @@ public class PostControllerTests
         IActionResult actual = await Act_EditPost_Post(postController, mockModel);
 
         // Assert
-        Assert_Notyf_Success(mockNotyf);
+        Assert_Notyf_SuccessAtLeastOnce(mockNotyf);
         mockHttpContext.VerifyAll();
         Assert_PostRepository_CreatedOnce(mockRepo, mockEntity);
         actual.AssertAsRedirectToActionResult("Index", "Home");
@@ -194,7 +193,7 @@ public class PostControllerTests
         IActionResult actual = await controller.Read(id);
 
         // Assert
-        Assert_Read_RepoCalledOnce(id, mockRepo);
+        Assert_PostRepository_ReadOnce(id, mockRepo);
         PostViewModel viewModel = actual
             .AssertAsViewModel<PostViewModel>();
         Assert_Read_ResultIsSameAsEntity(title, content, viewModel, mockPost);
@@ -214,8 +213,43 @@ public class PostControllerTests
         IActionResult actual = await controller.Read(id);
         
         // Assert
-        Assert_Read_RepoCalledOnce(id, mockRepo);
+        Assert_PostRepository_ReadOnce(id, mockRepo);
         Assert_Read_ViewModelIsNull(actual);
+    }
+
+    [Test]
+    public async Task ReadFromDeletePostConfirmationViewModel_WillCheckPostIdNull_AndRedirectToIndexWithErrorMessage()
+    {
+        // Arrange
+        Mock<INotyfService> mockNotyf = Arrange_Notyf();
+        PostController controller = Arrange_Controller(Arrange_Repo(), mockNotyf, Arrange_Logger());
+        DeletePostConfirmationViewModel viewModel = Arrange_DeletePostConfirmationViewModelFromId(null);
+
+        // Act
+        IActionResult actual = await controller.Read(viewModel);
+
+        // Assert
+        Assert_Notyf_ErrorAtLeastOnce(mockNotyf);
+        actual.AssertAsRedirectToActionResult("Index", "Home");
+    }
+    
+    [Test]
+    public async Task ReadFromDeletePostConfirmationViewModel_WillCheckPostIdNotNull_AndRedirectToRead()
+    {
+        // Arrange
+        Post mockPost = Arrange_Post(MockPostTitle, MockPostContent);
+        Mock<IPostRepository> mockRepo = Arrange_ReadFromRepo_WillReturnPost(mockPost.Id, mockPost);
+        PostController controller = Arrange_Controller(mockRepo, Arrange_Notyf(), Arrange_Logger());
+        DeletePostConfirmationViewModel viewModel = Arrange_DeletePostConfirmationViewModelFromId(mockPost.Id);
+
+        // Act
+        IActionResult actual = await controller.Read(viewModel);
+
+        // Assert
+        Assert_PostRepository_ReadOnce(mockPost.Id, mockRepo);
+        PostViewModel postViewModel = actual.AssertAsViewResult()
+            .AssertAsViewModel<PostViewModel>();
+        Assert_Read_ResultIsSameAsEntity(MockPostTitle, MockPostContent, postViewModel, mockPost);
     }
 
     [Test]
@@ -266,6 +300,130 @@ public class PostControllerTests
 
         // Assert
         mockRepo.VerifyAll();
+    }
+
+    [Test]
+    public void DeletePostConfirmation_WillCheckPostIdIsNull_AndReturnToIndexWithErrorMessage()
+    {
+        // Arrange
+        Mock<INotyfService> mockNotyf = Arrange_Notyf();
+        PostController controller = Arrange_Controller(Arrange_Repo(), mockNotyf, Arrange_Logger());
+        PostViewModel postViewModel = Arrange_PostViewModel_WithoutId();
+        
+        // Act
+        IActionResult actual = controller.DeletePostConfirmation(postViewModel);
+
+        // Assert
+        Assert_Notyf_ErrorAtLeastOnce(mockNotyf);
+        actual.AssertAsRedirectToActionResult("Index", "Home");
+    }
+
+    [Test]
+    public void DeletePostConfirmation_WillCheckPostId_AndReturnViewWithId()
+    {
+        // Arrange
+        PostController controller = Arrange_Controller_Default();
+        PostViewModel postViewModel = Arrange_PostViewModel();
+        DeletePostConfirmationViewModel deletePostConfirmationViewModel 
+            = Arrange_DeletePostConfirmationViewModelFromPostView(postViewModel);
+        
+        // Act
+        IActionResult actual = controller.DeletePostConfirmation(postViewModel);
+
+        // Assert
+        DeletePostConfirmationViewModel actualModel = actual.AssertAsViewResult()
+            .AssertAsViewModel<DeletePostConfirmationViewModel>();
+        Assert.AreEqual(deletePostConfirmationViewModel.PostId, actualModel.PostId);
+    }
+
+    [Test]
+    public async Task Delete_WillCheckPostIdIsNotNull_AndExecuteDeleteThenReturnToIndexWithSuccessMessage()
+    {
+        // Arrange
+        Mock<IPostRepository> mockRepo = Arrange_Repo();
+        Mock<INotyfService> mockNotyf = Arrange_Notyf();
+        PostController controller = Arrange_Controller(mockRepo, mockNotyf, Arrange_Logger());
+        DeletePostConfirmationViewModel model = Arrange_DeletePostConfirmationViewModelFromId(MockPostId);
+        
+        // Act
+        IActionResult actual = await controller.Delete(model);
+
+        // Assert
+        Assert_PostRepository_DeletedOnce(mockRepo);
+        Assert_Notyf_SuccessAtLeastOnce(mockNotyf);
+        actual.AssertAsRedirectToActionResult("Index", "Home");
+    }
+    
+    [Test]
+    public async Task Delete_WillCheckPostIdIsNull_AndStraightReturnToIndexWithSuccessMessage()
+    {
+        // Arrange
+        Mock<IPostRepository> mockRepo = Arrange_Repo();
+        Mock<INotyfService> mockNotyf = Arrange_Notyf();
+        PostController controller = Arrange_Controller(mockRepo, mockNotyf, Arrange_Logger());
+        DeletePostConfirmationViewModel model = Arrange_DeletePostConfirmationViewModelFromId(null);
+        
+        // Act
+        IActionResult actual = await controller.Delete(model);
+
+        // Assert
+        Assert_PostRepository_NeverInteracted(mockRepo);
+        Assert_Notyf_SuccessAtLeastOnce(mockNotyf);
+        actual.AssertAsRedirectToActionResult("Index", "Home");
+    }
+    
+    [Test]
+    public async Task Delete_WillNotThrowRepositoryNullReferenceException_AndStraightReturnToIndexWithSuccessMessage()
+    {
+        // Arrange
+        Mock<IPostRepository> mockRepo = Arrange_Repo();
+        Mock<INotyfService> mockNotyf = Arrange_Notyf();
+        PostController controller = Arrange_Controller(mockRepo, mockNotyf, Arrange_Logger());
+        DeletePostConfirmationViewModel model = Arrange_DeletePostConfirmationViewModelFromPostView(Arrange_PostViewModel());
+
+        mockRepo.Setup(m => m.Delete((int)model.PostId!)).Throws<NullReferenceException>();
+        
+        // Act
+        IActionResult actual = await controller.Delete(model);
+
+        // Assert
+        Assert_PostRepository_DeletedOnce(mockRepo);
+        Assert_Notyf_SuccessAtLeastOnce(mockNotyf);
+        actual.AssertAsRedirectToActionResult("Index", "Home");
+    }
+
+    private static void Assert_PostRepository_DeletedOnce(Mock<IPostRepository> mockRepo)
+    {
+        mockRepo.Verify(m => m.Delete(MockPostId), Times.Once);
+    }
+
+    private static DeletePostConfirmationViewModel Arrange_DeletePostConfirmationViewModelFromId(int? id)
+    {
+        return new()
+        {
+            PostId = id
+        };
+    }
+
+
+    private static DeletePostConfirmationViewModel Arrange_DeletePostConfirmationViewModelFromPostView(PostViewModel postViewModel)
+    {
+        return new()
+        {
+            PostId = postViewModel.Id
+        };
+    }
+
+    private static PostViewModel Arrange_PostViewModel_WithoutId()
+    {
+        return new()
+        {
+            Id = null,
+            Title = MockPostTitle,
+            Content = MockPostContent,
+            CreatedTime = DateTime.Now.ToString(CultureInfo.CurrentCulture),
+            AuthorName = MockUsername
+        };
     }
 
     private static void EditPost_Assert_EditorViewModelIsCorrect(IActionResult actual, Post expectedPost)
@@ -346,7 +504,7 @@ public class PostControllerTests
         };
     }
 
-    private static void Assert_Read_RepoCalledOnce(int id, Mock<IPostRepository> mockRepo)
+    private static void Assert_PostRepository_ReadOnce(int id, Mock<IPostRepository> mockRepo)
     {
         mockRepo.Verify(m => m.Read(id), Times.Once);
     }
@@ -427,9 +585,9 @@ public class PostControllerTests
             , Times.Once);
     }
 
-    private void Assert_Notyf_Success(Mock<INotyfService> notyf)
+    private void Assert_Notyf_SuccessAtLeastOnce(Mock<INotyfService> notyf)
     {
-        notyf.Verify(m => m.Success(PostSuccessMessage, default), Times.Once);
+        notyf.Verify(m => m.Success(It.IsAny<string>(), default), Times.AtLeastOnce);
     }
 
 

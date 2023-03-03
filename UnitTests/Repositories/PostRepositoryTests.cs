@@ -140,6 +140,37 @@ public class PostRepositoryTests
         Assert_DbHasCorrectNumberOfData(0);
     }
 
+    [Test]
+    public void Delete_WillQueryFirstAndCheckIsNull_AndThrowNullReferenceException()
+    {
+        // Arrange
+        IPostRepository repo = Arrange_GetRepo();
+        Arrange_CheckDbEmpty();
+
+        // Act
+        // Assert
+        Assert.ThrowsAsync<NullReferenceException>(() => repo.Delete(TestId));
+        Arrange_CheckDbEmpty();
+    }
+
+    [Test]
+    public async Task Delete_WilLQueryFirstAndCheckNotNull_AndRemoveFromDbThenReturnDeletedEntity()
+    {
+        // Arrange
+        IPostRepository repo = Arrange_GetRepo();
+        Arrange_CheckDbEmpty();
+        Post post = Arrange_Post();
+        await Arrange_PopulatePost(post);
+        Assert_DbHasCorrectNumberOfData(1);
+
+        // Act
+        Post actual = await repo.Delete(TestId);
+        
+        // Assert
+        Arrange_CheckDbEmpty();
+        Assert.AreEqual(post, actual);
+    }
+
     private async Task Arrange_PopulatePost(Post arrangePost)
     {
         await _forumContext!.Posts.AddAsync(arrangePost);
