@@ -52,18 +52,16 @@
     }
     <hr/>
     <h5>@Model.Content</h5>
-    @if (isLogon)
-    {
-        <hr/>
+    <hr/>
         @await Html.PartialAsync("..\\Comment\\_CommentInput", new CommentInputViewModel
         {
             PushChinese = pushChinese,
             BooChinese = booChinese,
             NaturalChinese = naturalChinese,
             IsUserAuthor = isByUser,
+            IsLogon = isLogon,
             PostId = Model.Id
         })
-    }
     <hr/>
     @if (hasComment)
     {

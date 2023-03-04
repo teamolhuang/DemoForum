@@ -1,15 +1,24 @@
 ﻿@model CommentInputViewModel
 
 <div class="comment-input" style="display: inline-flex">
-    <form asp-controller="Comment" method="post">
-        @Html.HiddenFor(m => m.PostId)
-        <input type="text" style="margin-bottom: 5px" asp-for="CommentContent" size="140" minlength="1" maxlength="100" placeholder="輸入推文內容（1 ~ 100 字）..." required/><br/>
-        @if (!Model.IsUserAuthor ?? false)
-        {
-            // 自己的文章只允許箭頭
-            <button class="button-cyan" type="submit" asp-action="Push" asp-controller="Comment">@Model.PushChinese</button>
-            <button class="button-red" type="submit" asp-action="Boo" asp-controller="Comment">@Model.BooChinese</button>
-        }
-        <button class="button-yellow" type="submit" asp-action="Natural" asp-controller="Comment">@Model.NaturalChinese</button>
-    </form>
+    @if (!Model.IsLogon ?? true)
+    {
+        <form>
+            <button style="margin-right: 6px" type="submit" asp-action="GetLogin" asp-controller="User">登入</button>後即可推文。
+        </form>
+    }
+    else
+    {
+        <form asp-controller="Comment" method="post">
+            @Html.HiddenFor(m => m.PostId)
+            <input type="text" style="margin-bottom: 5px" asp-for="CommentContent" size="140" minlength="1" maxlength="100" placeholder="輸入推文內容（1 ~ 100 字）..." required/><br/>
+            @if (!Model.IsUserAuthor ?? false)
+            {
+                // 自己的文章只允許箭頭
+                <button class="button-cyan" type="submit" asp-action="Push" asp-controller="Comment">@Model.PushChinese</button>
+                <button class="button-red" type="submit" asp-action="Boo" asp-controller="Comment">@Model.BooChinese</button>
+            }
+            <button class="button-yellow" type="submit" asp-action="Natural" asp-controller="Comment">@Model.NaturalChinese</button>
+        </form>
+    }
 </div>
