@@ -26,6 +26,8 @@ public class PostRepository : IPostRepository
     {
         return await _context.Posts
             .Include(p => p.Author)
+            .Include(p => p.Comments)
+            .ThenInclude(c => c.Author)
             .FirstOrDefaultAsync(p => p.Id == key);
     }
 

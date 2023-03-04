@@ -31,9 +31,13 @@ public class PostControllerTests
     private const string MockUsername = "MockUsername";
     private const string MockUserPassword = "MockPassword";
     private const int MockUserId = 1;
+
+    private const string MockCommentContent = "This is a mock comment!";
     
     [Test]
-    public async Task EditPostWithModel_WillCheckNewPostIsCorrect_AndCreateToDBAndRedirectToIndex()
+    [TestCase(PostMode.Edit)]
+    [TestCase(PostMode.New)]
+    public async Task EditPostWithModel_WillCheckPostIsCorrect_AndAddToDBAndRedirectToIndex(PostMode mode)
     {
         // Arrange
         Mock<IPostRepository> mockRepo = Arrange_Repo();
@@ -42,17 +46,49 @@ public class PostControllerTests
 
         PostController postController = Arrange_Controller_WithMockHttpContext(mockRepo, mockNotyf, Arrange_Logger(), mockHttpContext);
 
-        EditorViewModel mockModel = Arrange_EditPostViewModel_New();
-        Post mockEntity = Arrange_Post_FromMockViewModel(mockModel, MockSid);
+        EditorViewModel mockModel;
 
+        switch (mode)
+        {
+            case PostMode.Edit:
+                mockModel = Arrange_EditPostViewModel_Edit();
+                Post mockEntityChanged = Arrange_Post_Changed(mockModel);
+                mockRepo.Setup(m => m.Update(mockModel.EntityId, GetPostComparer(mockEntityChanged)))
+                    .ReturnsAsync(mockEntityChanged);
+                break;
+            case PostMode.New:
+                mockModel = Arrange_EditPostViewModel();
+                Post mockEntity = Arrange_Post_FromMockViewModel(mockModel, MockSid);
+                mockRepo.Setup(m => m.Create(GetPostComparer(mockEntity))).ReturnsAsync(mockEntity);
+                break;
+            default:
+                throw new ArgumentException();
+        }
         // Act
         IActionResult actual = await Act_EditPost_Post(postController, mockModel);
 
         // Assert
         Assert_Notyf_SuccessAtLeastOnce(mockNotyf);
         mockHttpContext.VerifyAll();
-        Assert_PostRepository_CreatedOnce(mockRepo, mockEntity);
-        actual.AssertAsRedirectToActionResult("Index", "Home");
+        mockRepo.VerifyAll();
+        RedirectToActionResult redirect = actual.AssertAsRedirectToActionResult("Read");
+        Assert.NotNull(redirect.RouteValues);
+        Assert.IsTrue(redirect.RouteValues!.ContainsKey("id"));
+    }
+
+    private static Post GetPostComparer(Post targetPost)
+    {
+        return It.Is<Post>(
+            p => p.Title == targetPost.Title
+                 && p.Content == targetPost.Content);
+    }
+
+    private static Post Arrange_Post_Changed(EditorViewModel mockModel)
+    {
+        Post mockEntityChanged = Arrange_Post_FromMockViewModel(mockModel, MockSid);
+        mockEntityChanged.Content = MockPostContentChanged;
+        mockEntityChanged.Title = MockPostTitleChanged;
+        return mockEntityChanged;
     }
 
     private static Mock<HttpContext> EditPostWithModel_Arrange_HttpContextWithProperClaim()
@@ -77,7 +113,7 @@ public class PostControllerTests
 
         PostController postController = Arrange_Controller_WithMockHttpContext(mockRepo, mockNotyf, Arrange_Logger(), mockHttpContext);
 
-        EditorViewModel mockModel = Arrange_EditPostViewModel_New();
+        EditorViewModel mockModel = Arrange_EditPostViewModel();
 
         // Act
         // Assert
@@ -142,7 +178,7 @@ public class PostControllerTests
             case PostMode.New:
             default:
                 mockRepo.Setup(m => m.Create(It.IsAny<Post>())).Throws<Exception>();
-                viewModel = Arrange_EditPostViewModel_New();
+                viewModel = Arrange_EditPostViewModel();
                 break;
         }
         
@@ -184,8 +220,11 @@ public class PostControllerTests
     [TestCase(3, "標題2", "內容2")]
     public async Task Read_WillQueryForPost_AndReturnCorrectPostViewModel(int id, string title, string content)
     {
+        User mockUser = Arrange_User(MockUserId, MockUsername, MockUserPassword);
+        IEnumerable<Comment> mockComments = Read_Arrange_MockCommentList(mockUser);
+        
         // Arrange
-        Post mockPost = Arrange_Post(title, content);
+        Post mockPost = Arrange_PostWithComments(title, content, mockComments);
         Mock<IPostRepository> mockRepo = Arrange_ReadFromRepo_WillReturnPost(id, mockPost);
         PostController controller = Arrange_Controller(mockRepo, Arrange_Notyf(), Arrange_Logger());
 
@@ -198,6 +237,21 @@ public class PostControllerTests
             .AssertAsViewModel<PostViewModel>();
         Assert_Read_ResultIsSameAsEntity(title, content, viewModel, mockPost);
         Assert_Read_ViewBagHasCommentChinese(actual);
+    }
+
+    private static List<Comment> Read_Arrange_MockCommentList(User mockUser)
+    {
+        return new List<Comment>
+        {
+            new()
+            {
+                Type = CommentMode.Push.GetDbEnum(),
+                Author = mockUser,
+                AuthorId = mockUser.Id,
+                Content = MockCommentContent,
+                CreatedTime = DateTime.Now
+            }
+        };
     }
 
     [Test]
@@ -216,7 +270,6 @@ public class PostControllerTests
         // Assert
         Assert_PostRepository_ReadOnce(id, mockRepo);
         Assert_Read_ViewModelIsNull(actual);
-        Assert_Read_ViewBagHasCommentChinese(actual);
     }
 
     private static void Assert_Read_ViewBagHasCommentChinese(IActionResult actual)
@@ -492,6 +545,8 @@ public class PostControllerTests
         Assert.NotNull(mockPost.UpdatedTime);
         DateTime updatedTime = (DateTime)mockPost.UpdatedTime!;
         Assert.AreEqual(updatedTime.ToString(CultureInfo.CurrentCulture), viewModel.UpdatedTime);
+        
+        // TODO figure out a way to test CommentViews
     }
 
     private Post Arrange_Post(string title, string content)
@@ -506,6 +561,27 @@ public class PostControllerTests
             Author = Arrange_User(MockUserId, MockUsername, MockUserPassword),
             AuthorId = MockUserId
         };
+    }
+    
+    private Post Arrange_PostWithComments(string title, string content, IEnumerable<Comment> comments)
+    {
+        Post p = new()
+        {
+            Id = MockPostId,
+            Title = title,
+            Content = content,
+            CreatedTime = DateTime.Now,
+            UpdatedTime = DateTime.Now + TimeSpan.FromDays(1),
+            Author = Arrange_User(MockUserId, MockUsername, MockUserPassword),
+            AuthorId = MockUserId,
+        };
+
+        foreach (Comment comment in comments)
+        {
+            p.Comments.Add(comment);
+        }
+
+        return p;
     }
 
     private User Arrange_User(int id, string username, string password)
@@ -567,7 +643,7 @@ public class PostControllerTests
         return mockEntity;
     }
 
-    private static EditorViewModel Arrange_EditPostViewModel_New()
+    private static EditorViewModel Arrange_EditPostViewModel()
     {
         EditorViewModel mockModel = new()
         {
@@ -582,21 +658,12 @@ public class PostControllerTests
     {
         EditorViewModel mockModel = new()
         {
-            PostTitle = MockPostTitle,
-            PostContent = MockPostContent,
+            EntityId = MockPostId,
+            PostTitle = MockPostTitleChanged,
+            PostContent = MockPostContentChanged,
             PostMode = PostMode.Edit
         };
         return mockModel;
-    }
-
-    private void Assert_PostRepository_CreatedOnce(Mock<IPostRepository> mockRepo, Post mockEntity)
-    {
-        mockRepo.Verify(m =>
-                m.Create(It.Is<Post>(p =>
-                    p.Title == mockEntity.Title 
-                    && p.Content == mockEntity.Content
-                    && p.AuthorId == mockEntity.AuthorId))
-            , Times.Once);
     }
 
     private void Assert_Notyf_SuccessAtLeastOnce(Mock<INotyfService> notyf)

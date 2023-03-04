@@ -8,5 +8,6 @@ public class PostViewModel
     public string? CreatedTime { get; set; }
     public string? AuthorName { get; set; }
     public string? UpdatedTime { get; set; }
-    public string? CommentContent { get; set; }
+
+    public IEnumerable<CommentViewModel>? CommentViews { get; set; }
 }

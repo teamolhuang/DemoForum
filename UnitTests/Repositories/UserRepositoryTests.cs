@@ -53,17 +53,17 @@ public class UserRepositoryTests : InMemoryDbSetup
     }
 
     [Test]
-    [TestCase(1, "Babby", "12345678")]
-    [TestCase(151, "Pikachu", "111000999")]
-    public async Task Read_WillQueryDb_AndReturnFoundEntity(int id, string username, string password)
+    [TestCase("Babby", "12345678")]
+    [TestCase("Pikachu", "111000999")]
+    public async Task Read_WillQueryDb_AndReturnFoundEntity(string username, string password)
     {
         // Arrange
         IUserRepository userRepository = Arrange_Repo(ForumContext);
-        User input = Arrange_UserObject(id, username, password);
+        User input = Arrange_UserObject(username, password);
         Arrange_EnsureExistingAsOnlyOneInDb(ForumContext, input);
         
         // Act
-        User? actual = await userRepository.Read(id);
+        User? actual = await userRepository.Read(1);
 
         // Assert
         Assert.IsNotNull(actual);
@@ -158,18 +158,6 @@ public class UserRepositoryTests : InMemoryDbSetup
         return input;
     }
     
-    private static User Arrange_UserObject(int id, string username, string password)
-    {
-        User input = new()
-        {
-            Id = id,
-            Username = username,
-            Password = password,
-            Version = ExtensionMethods.GetNowTimestamp()
-        };
-        return input;
-    }
-
     private void Create_Assert_InputObjectHasPasswordReplaced(User input, User entity)
     {
         Assert.AreEqual(input.Password, entity.Password);

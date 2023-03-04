@@ -1,8 +1,11 @@
-﻿using AspNetCoreHero.ToastNotification.Abstractions;
+﻿using System.Security.Claims;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Enums;
 using DemoForum.Models;
 using DemoForum.Models.Entities;
 using DemoForum.Repositories;
+using DemoForum.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoForum.Controllers;
@@ -11,28 +14,33 @@ public class CommentController : Controller
 {
     private readonly ICommentRepository _commentRepository;
     private readonly IPostRepository _postRepository;
+    private readonly IUserRepository _userRepository;
     private readonly INotyfService _notyf;
 
-    public CommentController(ICommentRepository commentRepository, IPostRepository postRepository, INotyfService notyf)
+    public CommentController(ICommentRepository commentRepository, IPostRepository postRepository, IUserRepository userRepository, INotyfService notyf)
     {
         _commentRepository = commentRepository;
         _postRepository = postRepository;
+        _userRepository = userRepository;
         _notyf = notyf;
     }
     
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Push(CommentInputViewModel model)
     {
         return await PostComment(model, CommentMode.Push);
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Boo(CommentInputViewModel model)
     {
         return await PostComment(model, CommentMode.Boo);
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Natural(CommentInputViewModel model)
     {
         return await PostComment(model, CommentMode.Natural);
@@ -50,20 +58,29 @@ public class CommentController : Controller
             return RedirectToAction("Index", "Home");
         }
 
+        User? user = await _userRepository.Read(HttpContext.GetUserIdFromClaimsInt());
+
+        if (user == null)
+        {
+            // Claims 或登入資訊有誤，要求重新登入
+            _notyf.Error("帳號資訊有誤或登入逾時，請重新登入。");
+            return RedirectToAction("Logout", "User");
+        }
+
         Comment comment = new()
         {
-            AuthorId = post.AuthorId,
+            AuthorId = user.Id,
+            Author = user,
             PostId = post.Id,
+            Post = post,
             Content = viewModel.CommentContent!,
             CreatedTime = DateTime.Now,
-            Type = mode.GetDbEnum(),
-            Author = post.Author,
-            Post = post
+            Type = mode.GetDbEnum()
         };
 
         await _commentRepository.Create(comment);
 
         _notyf.Success("推文成功！");
-        return RedirectToAction("Read", "Post", new {viewModel.PostId});
+        return RedirectToAction("Read", "Post", new {Id = viewModel.PostId});
     }
 }

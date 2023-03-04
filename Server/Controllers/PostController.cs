@@ -6,6 +6,7 @@ using DemoForum.Enums;
 using DemoForum.Models;
 using DemoForum.Models.Entities;
 using DemoForum.Repositories;
+using DemoForum.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,44 +32,40 @@ public class PostController : Controller
         if (!ModelState.IsValid)
             return EditorView(editor);
         
-        string? sidString = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
-        
         try
         {
-            // throw Exception when no suitable claim is found
-            if (sidString == null || !int.TryParse(sidString, out int sidInt))
-                throw new ArgumentException($"Sid claim not found or not parsable!");
-            
             Post entity = new()
             {
                 Title = editor.PostTitle!,
                 Content = editor.PostContent!,
-                AuthorId = sidInt
+                AuthorId = HttpContext.GetUserIdFromClaimsInt()
             };
             
             switch (editor.PostMode)
             {
                 case PostMode.Edit:
-                    await _postRepository.Update(editor.EntityId, entity);
+                    entity = await _postRepository.Update(editor.EntityId, entity);
                     break;
                 case PostMode.New:
                 default:
-                    await _postRepository.Create(entity);
+                    entity = await _postRepository.Create(entity);
                     break;
             }
 
             _notyfService.Success($"{editor.PostMode.GetChinese()}成功！");
+            
+            return RedirectToAction("Read", new {id = entity.Id});
         }
         catch (Exception e)
         {
             _logger.LogError($"GetEditEditor failed, mode {editor.PostMode}, {editor}");
-            _logger.LogError($"Cookie sidString: {sidString}");
+            _logger.LogError($"Cookie sidString: {HttpContext.GetUserIdFromClaims()}");
             _logger.LogError(e.ToString());
-            _notyfService.Error($"{editor.PostMode.GetChinese()}失敗，請通知網站管理員 ...");
+            _notyfService.Error($"{editor.PostMode.GetChinese()}失敗，可能是網站忙碌中，請稍後再試 ...");
             _notyfService.Error(HttpUtility.JavaScriptStringEncode(e.Message));
+            
+            return RedirectToAction("Index", "Home");
         }
-
-        return RedirectToAction("Index", "Home");
     }
 
     [HttpPost]
@@ -135,24 +132,30 @@ public class PostController : Controller
     public async Task<IActionResult> Read(int id)
     {
         Post? post = await _postRepository.Read(id);
-        PostViewModel postViewModel = null!;
 
         if (post == null)
         {
             _notyfService.Error("點擊的文章似乎已被刪除 ...");
+            return View();
         }
-        else
+
+        PostViewModel postViewModel = new()
         {
-            postViewModel = new()
+            Id = post.Id,
+            Title = post.Title,
+            Content = post.Content,
+            CreatedTime = post.CreatedTime.ToString(CultureInfo.CurrentCulture),
+            AuthorName = post.Author.Username,
+            UpdatedTime = post.UpdatedTime?.ToString(CultureInfo.CurrentCulture),
+            CommentViews = post.Comments.Select(c => new CommentViewModel
             {
-                Id = post.Id,
-                Title = post.Title,
-                Content = post.Content,
-                CreatedTime = post.CreatedTime.ToString(CultureInfo.CurrentCulture),
-                AuthorName = post.Author.Username,
-                UpdatedTime = post.UpdatedTime?.ToString(CultureInfo.CurrentCulture)
-            };
-        }
+                CommentMode = CommentModeHelper.ByDbType(c.Type),
+                Username = c.Author.Username,
+                Content = c.Content,
+                CreatedTime = c.CreatedTime.ToString(CultureInfo.CurrentCulture)
+            })
+                .OrderBy(cv => cv.CreatedTime)
+        };
 
         ViewResult view = View(postViewModel);
         view.ViewData["PushChinese"] = CommentMode.Push.GetChinese();

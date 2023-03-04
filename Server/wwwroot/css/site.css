@@ -44,7 +44,6 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
     background-color: var(--color-bg-body);
     color: var(--color-text);
 }
@@ -100,14 +99,31 @@ input[type="text"], textarea, input[type="password"] {
 
 a {
     color: var(--color-link);
-    text-decoration: none;
 }
 
 a:hover {
     color: var(--color-link-hover);
-    text-decoration: underline;
-    text-underline-position: under;
-    text-underline-offset: 0.15em;
+}
+
+.post-info {
+    box-shadow: 0 0 0 3px var(--color-view-item-bg);
+    color: var(--color-text);
+    background-color: var(--color-view-item-bg);
+}
+
+.comment-mode-natural {
+    background-color: var(--color-button-bg-yellow) !important;
+    box-shadow: var(--color-button-bg-yellow) !important;
+}
+
+.comment-mode-push {
+    background-color: var(--color-button-bg-cyan) !important;
+    box-shadow: var(--color-button-bg-cyan) !important;
+}
+
+.comment-mode-boo {
+    background-color: var(--color-button-bg-red) !important;
+    box-shadow: var(--color-button-bg-red) !important;
 }
 
 /* Shapes */
@@ -120,6 +136,10 @@ button, input, textarea {
     outline: none;
 }
 
+body {
+    margin-bottom: 60px;
+}
+
 button {
     border-radius: 15px;
     padding-left: 20px;
@@ -128,18 +148,25 @@ button {
 
 .post-info {
     display: inline-block;
-    box-shadow: 0 0 0 3px var(--color-view-item-bg);
     padding-left: 10px;
     padding-right: 10px;
     border-radius: 15px;
     opacity: 80%;
-    color: var(--color-text);
-    background-color: var(--color-view-item-bg);
 }
 
 /* Fonts */
 button {
     font-weight: 500;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    text-underline-position: under;
+    text-underline-offset: 0.15em;
 }
 
 /* Error Message */

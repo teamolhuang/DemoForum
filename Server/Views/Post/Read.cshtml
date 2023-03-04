@@ -1,5 +1,6 @@
 ﻿@using System.Security.Claims
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.IdentityModel.Tokens
 @model PostViewModel?
 
 @{
@@ -7,7 +8,8 @@
     bool isLogon = User.Identity?.IsAuthenticated ?? false;
     string? logonUsername = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
     bool isByUser = isValid && isLogon && Model!.AuthorName == logonUsername;
-    
+
+    bool hasComment = !Model!.CommentViews.IsNullOrEmpty();
     string pushChinese = ViewBag.PushChinese;
     string booChinese = ViewBag.BooChinese;
     string naturalChinese = ViewBag.NaturalChinese;
@@ -50,9 +52,9 @@
     }
     <hr/>
     <h5>@Model.Content</h5>
-    <hr/>
     @if (isLogon)
     {
+        <hr/>
         @await Html.PartialAsync("..\\Comment\\_CommentInput", new CommentInputViewModel
         {
             PushChinese = pushChinese,
@@ -62,6 +64,21 @@
             PostId = Model.Id
         })
     }
+    <hr/>
+    @if (hasComment)
+    {
+        
+        int counter = 0;
+        foreach (CommentViewModel c in Model.CommentViews!)
+        {
+            c.Floor = ++counter;
+            @await Html.PartialAsync("..\\Comment\\_Comment", c)
+            <hr/>
+        }
+    }
+    <form method="get">
+        <button type="submit" asp-action="Index" asp-controller="Home">回首頁</button>
+    </form>
     <hr/>
 </div>
 </body>

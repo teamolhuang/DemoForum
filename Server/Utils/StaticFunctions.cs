@@ -1,4 +1,6 @@
-﻿namespace DemoForum.Utils;
+﻿using System.Security.Claims;
+
+namespace DemoForum.Utils;
 
 public static class StaticFunctions
 {
@@ -39,5 +41,20 @@ public static class StaticFunctions
     public static string ShortenToPreview(this string s, int length = 20, string suffix = " ...")
     {
         return s.Length > length ? s.Substring(0, length) + suffix : s;
+    }
+
+    public static string? GetUserIdFromClaims(this HttpContext context)
+    {
+        return context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+    }
+
+    public static int GetUserIdFromClaimsInt(this HttpContext context)
+    {
+        string? sidString = context.GetUserIdFromClaims();
+        // throw Exception when no suitable claim is found
+        if (sidString == null || !int.TryParse(sidString, out int sidInt))
+            throw new ArgumentException($"Sid claim not found or not parsable!");
+
+        return sidInt;
     }
 }

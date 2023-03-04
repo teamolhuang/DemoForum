@@ -7,7 +7,7 @@ public enum CommentMode
     Natural
 }
 
-public static class CommentModeStrings
+public static class CommentModeHelper
 {
     public static string GetChinese(this CommentMode mode)
     {
@@ -15,7 +15,7 @@ public static class CommentModeStrings
         {
             CommentMode.Push => "推",
             CommentMode.Boo => "噓",
-            _ => "箭頭"
+            _ => "→"
         };
     }
 
@@ -23,5 +23,20 @@ public static class CommentModeStrings
     {
         // N for Natural, default
         return Enum.GetName(mode)?.Substring(0, 1) ?? "N";
+    }
+
+    public static CommentMode ByDbType(string dbType)
+    {
+        return dbType switch
+        {
+            "P" => CommentMode.Push,
+            "B" => CommentMode.Boo,
+            _ => CommentMode.Natural
+        };
+    }
+    
+    public static string GetCssSuffix(this CommentMode mode)
+    {
+        return Enum.GetName(mode)?.ToLower() ?? "natural";
     }
 }
