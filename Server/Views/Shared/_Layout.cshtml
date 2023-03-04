@@ -1,5 +1,4 @@
 ﻿@using System.Security.Claims
-
 @{
     bool isLogon = User.Identity?.IsAuthenticated ?? false;
     string? logonUsername = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;

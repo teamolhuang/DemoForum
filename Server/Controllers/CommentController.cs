@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using AspNetCoreHero.ToastNotification.Abstractions;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Enums;
 using DemoForum.Models;
 using DemoForum.Models.Entities;

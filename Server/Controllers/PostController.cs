@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Security.Claims;
 using System.Web;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Enums;
