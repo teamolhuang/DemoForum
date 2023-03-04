@@ -13,6 +13,7 @@
 <hr/>
 <div style="display: flex; justify-content: center; align-items: center;">
     <form asp-controller="Post" method="post">
+        @Html.AntiForgeryToken()
         @Html.HiddenFor(model => model!.PostId)
         <button type="submit" asp-action="ReadFromDeletePostConfirmation">取消</button>
         <button class="button-red" type="submit" asp-action="Delete">對，我要刪</button>

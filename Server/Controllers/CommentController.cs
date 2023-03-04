@@ -27,6 +27,7 @@ public class CommentController : Controller
     
     [HttpPost]
     [Authorize]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Push(CommentInputViewModel model)
     {
         return await PostComment(model, CommentMode.Push);
@@ -34,6 +35,7 @@ public class CommentController : Controller
 
     [HttpPost]
     [Authorize]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Boo(CommentInputViewModel model)
     {
         return await PostComment(model, CommentMode.Boo);
@@ -41,6 +43,7 @@ public class CommentController : Controller
 
     [HttpPost]
     [Authorize]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Natural(CommentInputViewModel model)
     {
         return await PostComment(model, CommentMode.Natural);

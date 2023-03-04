@@ -13,6 +13,7 @@
 </head>
 <body>
 <form asp-controller="Post" asp-action="PostEditResult" method="post">
+    @Html.AntiForgeryToken()
     <h2 legend>@ViewData["Title"]</h2>
 
     <hr/>

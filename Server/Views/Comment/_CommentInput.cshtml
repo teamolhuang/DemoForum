@@ -10,6 +10,7 @@
     else
     {
         <form asp-controller="Comment" method="post">
+            @Html.AntiForgeryToken()
             @Html.HiddenFor(m => m.PostId)
             <input type="text" style="margin-bottom: 5px" asp-for="CommentContent" size="140" minlength="1" maxlength="100" placeholder="輸入推文內容（1 ~ 100 字）..." required/><br/>
             @if (!Model.IsUserAuthor ?? false)

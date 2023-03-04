@@ -23,6 +23,7 @@ public class UserController : Controller
     }
     
     [HttpPost("Register")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> PostRegister(RegisterViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -49,6 +50,7 @@ public class UserController : Controller
     }
     
     [HttpPost("Login")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> PostLogin(LoginViewModel viewModel)
     {
         if (!ModelState.IsValid)

@@ -8,18 +8,19 @@
 </head>
 <body>
 <form asp-controller="User" asp-action="PostRegister" method="post">
+    @Html.AntiForgeryToken()
     <h2 legend>註冊帳號</h2>
 
     <hr/>
-    
+
     <h5 style="display: inline">帳號</h5> @Html.ValidationMessageFor(m => m.Username)<br/>
     <input type="text" asp-for="Username" size="40" minlength="2" maxlength="12" pattern="^[A-z0-9]+$" placeholder="輸入帳號（2 ~ 12 個英數字） ..."/><br/>
-    
+
     <h5 style="display: inline">密碼</h5> @Html.ValidationMessageFor(m => m.Password)<br/>
-    <input type="password" asp-for="Password" size="40" minlength="8" maxlength="20" pattern = "^[A-z0-9_%$!#]+$" placeholder="輸入密碼（8 ~ 20 個英數字、_%$!#符號） ..."/>
+    <input type="password" asp-for="Password" size="40" minlength="8" maxlength="20" pattern="^[A-z0-9_%$!#]+$" placeholder="輸入密碼（8 ~ 20 個英數字、_%$!#符號） ..."/>
 
     <hr/>
-    
+
     <h6><a>@Html.ActionLink("登入", "GetLogin", "User", null)</a></h6>
     <div class="submit">
         <button type="submit">送出</button>

@@ -27,6 +27,7 @@ public class PostController : Controller
 
     [HttpPost("Edit")]
     [Authorize]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> PostEditResult(EditorViewModel editor)
     {
         if (!ModelState.IsValid)
@@ -70,6 +71,7 @@ public class PostController : Controller
 
     [HttpPost]
     [Authorize]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditPost(PostViewModel postViewModel)
     {
         Post? post = await _postRepository.Read(postViewModel.Id ?? throw new NullReferenceException("Post id is null!"));
@@ -97,6 +99,7 @@ public class PostController : Controller
 
     [HttpPost("Delete")]
     [Authorize]
+    [ValidateAntiForgeryToken]
     public IActionResult DeletePostConfirmation(PostViewModel post)
     {
         if (post.Id == null)
@@ -178,7 +181,9 @@ public class PostController : Controller
         return result;
     }
 
+    [HttpPost]
     [Authorize]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(DeletePostConfirmationViewModel model)
     {
         if (model.PostId != null)

@@ -49,6 +49,12 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.Name = Consts.AntiForgeryCookie;
+    options.HeaderName = Consts.AntiForgeryCookieHeader;
+});
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
