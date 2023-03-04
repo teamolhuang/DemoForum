@@ -17,18 +17,18 @@ http://ec2-18-180-93-247.ap-northeast-1.compute.amazonaws.com/
 ### 展示內容
 
 1. CRUD
-  - 註冊與登入
-  - 發表、修改、刪除文章
-  - 推文
+    - 註冊與登入
+    - 發表、修改、刪除文章
+    - 推文
 2. 使用者驗證
-  - Cookie 驗證，配合 ASP.NET Core 提供的 AntiForgeryToken
+    - Cookie 驗證，配合 ASP.NET Core 提供的 AntiForgeryToken
 3. 單元測試
-  - NUnit
-  - Moq
-  - In-Memory DB
+    - NUnit
+    - Moq
+    - In-Memory DB
 4. ORM
-  - Entity Framework Core (EF7)
-  - LINQ 語法實現 Repositories
+    - Entity Framework Core (EF7)
+    - LINQ 語法實現 Repositories
 
 ---
 
