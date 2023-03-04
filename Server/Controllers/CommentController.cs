@@ -21,27 +21,27 @@ public class CommentController : Controller
     }
     
     [HttpPost]
-    public async Task<IActionResult> Push(PostViewModel model)
+    public async Task<IActionResult> Push(CommentInputViewModel model)
     {
         return await PostComment(model, CommentMode.Push);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Boo(PostViewModel model)
+    public async Task<IActionResult> Boo(CommentInputViewModel model)
     {
         return await PostComment(model, CommentMode.Boo);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Natural(PostViewModel model)
+    public async Task<IActionResult> Natural(CommentInputViewModel model)
     {
         return await PostComment(model, CommentMode.Natural);
     }
 
-    private async Task<IActionResult> PostComment(PostViewModel viewModel, CommentMode mode)
+    private async Task<IActionResult> PostComment(CommentInputViewModel viewModel, CommentMode mode)
     {
         Post? post = await _postRepository
-            .Read(viewModel.Id 
+            .Read(viewModel.PostId
                   ?? throw new NullReferenceException("PostComment got a null postId from view"));
 
         if (post == null)
@@ -64,6 +64,6 @@ public class CommentController : Controller
         await _commentRepository.Create(comment);
 
         _notyf.Success("推文成功！");
-        return RedirectToAction("Read", "Post", new {viewModel.Id});
+        return RedirectToAction("Read", "Post", new {viewModel.PostId});
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Controllers;
@@ -33,26 +31,46 @@ public class CommentControllerTests
 
         Post mockPost = Arrange_MockPost();
         PostComment_Arrange_MockRepoRead(mockPostRepo, mockPost);
-        
-        PostViewModel mockPostView = Arrange_PostViewModel();
+
+        CommentInputViewModel mockCommentInputView = Arrange_CommentInputView();
 
         // Act
 
         IActionResult actual = mode switch
         {
-            CommentMode.Push => await controller.Push(mockPostView),
-            CommentMode.Boo => await controller.Boo(mockPostView),
-            CommentMode.Natural => await controller.Natural(mockPostView),
+            CommentMode.Push => await controller.Push(mockCommentInputView),
+            CommentMode.Boo => await controller.Boo(mockCommentInputView),
+            CommentMode.Natural => await controller.Natural(mockCommentInputView),
             _ => throw new ArgumentException()
         };
 
         // Assert
         mockPostRepo.VerifyAll();
-        PostComment_Assert_CommentIsCreated(mockCommentRepo, mockPostView);
+        PostComment_Assert_CommentIsCreated(mockCommentRepo, mockCommentInputView);
         Assert_Notyf_SuccessAtLeastOnce(mockNotyf);
-        PostComment_Assert_RedirectedToReadAndHasPostId(actual, mockPostView);
+        PostComment_Assert_RedirectedToReadAndHasPostId(actual, mockCommentInputView);
+    }
+
+    private static CommentInputViewModel Arrange_CommentInputView()
+    {
+        CommentInputViewModel mockCommentInputView = new()
+        {
+            PostId = MockPostId,
+            CommentContent = MockContent
+        };
+        return mockCommentInputView;
     }
     
+    private static CommentInputViewModel Arrange_CommentInputViewWithIdAsNull()
+    {
+        CommentInputViewModel mockCommentInputView = new()
+        {
+            PostId = null,
+            CommentContent = MockContent
+        };
+        return mockCommentInputView;
+    }
+
     [Test]
     [TestCase(CommentMode.Push)]
     [TestCase(CommentMode.Boo)]
@@ -64,15 +82,15 @@ public class CommentControllerTests
         Mock<IPostRepository> mockPostRepo = Arrange_MockPostRepository();
         CommentController controller = Arrange_Controller(mockCommentRepo, mockPostRepo, Arrange_MockNotyf());
 
-        PostViewModel mockPostView = Arrange_PostViewModelWithIdAsNull();
+        CommentInputViewModel mockCommentInputView = Arrange_CommentInputViewWithIdAsNull();
 
         // Act
 
         Assert.ThrowsAsync<NullReferenceException>(() => mode switch
         {
-            CommentMode.Push => controller.Push(mockPostView),
-            CommentMode.Boo => controller.Boo(mockPostView),
-            CommentMode.Natural => controller.Natural(mockPostView),
+            CommentMode.Push => controller.Push(mockCommentInputView),
+            CommentMode.Boo => controller.Boo(mockCommentInputView),
+            CommentMode.Natural => controller.Natural(mockCommentInputView),
             _ => throw new ArgumentException()
         });
 
@@ -93,15 +111,15 @@ public class CommentControllerTests
         Mock<INotyfService> mockNotyf = Arrange_MockNotyf();
         CommentController controller = Arrange_Controller(mockCommentRepo, mockPostRepo, mockNotyf);
 
-        PostViewModel mockPostView = Arrange_PostViewModel();
+        CommentInputViewModel mockCommentView = Arrange_CommentInputView();
 
         // Act
 
         IActionResult actual = mode switch
         {
-            CommentMode.Push => await controller.Push(mockPostView),
-            CommentMode.Boo => await controller.Boo(mockPostView),
-            CommentMode.Natural => await controller.Natural(mockPostView),
+            CommentMode.Push => await controller.Push(mockCommentView),
+            CommentMode.Boo => await controller.Boo(mockCommentView),
+            CommentMode.Natural => await controller.Natural(mockCommentView),
             _ => throw new ArgumentException()
         };
 
@@ -117,10 +135,10 @@ public class CommentControllerTests
         actual.AssertAsRedirectToActionResult("Index", "Home");
     }
 
-    private static void PostComment_Assert_RedirectedToReadAndHasPostId(IActionResult actual, PostViewModel mockPostView)
+    private static void PostComment_Assert_RedirectedToReadAndHasPostId(IActionResult actual, CommentInputViewModel mockPostView)
     {
         RedirectToActionResult actualRedirect = actual.AssertAsRedirectToActionResult("Read", "Post");
-        Assert.IsTrue(actualRedirect.RouteValues!.Values.Contains(mockPostView.Id));
+        Assert.IsTrue(actualRedirect.RouteValues!.Values.Contains(mockPostView.PostId));
     }
 
     private static void Assert_Notyf_SuccessAtLeastOnce(Mock<INotyfService> mockNotyf)
@@ -134,7 +152,7 @@ public class CommentControllerTests
     }
 
 
-    private static void PostComment_Assert_CommentIsCreated(Mock<ICommentRepository> mockCommentRepo, PostViewModel mockPostView)
+    private static void PostComment_Assert_CommentIsCreated(Mock<ICommentRepository> mockCommentRepo, CommentInputViewModel mockPostView)
     {
         mockCommentRepo.Verify(m
             => m.Create(It.Is<Comment>(c
@@ -145,27 +163,7 @@ public class CommentControllerTests
     {
         mockPostRepo.Setup(m => m.Read(MockPostId)).ReturnsAsync(mockPost);
     }
-
-    private static PostViewModel Arrange_PostViewModel()
-    {
-        PostViewModel mockPostView = new()
-        {
-            CommentContent = MockContent,
-            Id = MockPostId
-        };
-        return mockPostView;
-    }
     
-    private static PostViewModel Arrange_PostViewModelWithIdAsNull()
-    {
-        PostViewModel mockPostView = new()
-        {
-            CommentContent = MockContent,
-            Id = null
-        };
-        return mockPostView;
-    }
-
     private static Post Arrange_MockPost()
     {
         Post mockPost = new()
