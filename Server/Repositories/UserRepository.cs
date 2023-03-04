@@ -37,22 +37,32 @@ public class UserRepository : IUserRepository
     }
 
     /// <summary>
+    /// Gets an User from db by Id as key.<br/>
+    /// </summary>
+    /// <param name="key">Id</param>
+    /// <returns>Entity; null if not found.</returns>
+    public async Task<User?> Read(int key)
+    {
+        return await _forumContext.Users.FirstOrDefaultAsync(u => u.Id == key);
+    }
+    
+    /// <summary>
     /// Gets an User from db by Username as key.<br/>
     /// Note that the Username db column is case-insensitive. 
     /// </summary>
-    /// <param name="key">Username</param>
+    /// <param name="username">Username</param>
     /// <returns>Entity; null if not found.</returns>
-    public async Task<User?> Read(string key)
+    public async Task<User?> ReadByUsername(string username)
     {
-        return await _forumContext.Users.FirstOrDefaultAsync(u => u.Username == key);
+        return await _forumContext.Users.FirstOrDefaultAsync(u => u.Username == username);
     }
 
-    public Task<User> Update(string key, User obj)
+    public Task<User> Update(int key, User obj)
     {
         throw new NotImplementedException();
     }
 
-    public Task<User> Delete(string key)
+    public Task<User> Delete(int key)
     {
         throw new NotImplementedException();
     }
@@ -64,7 +74,7 @@ public class UserRepository : IUserRepository
     /// <returns>true: password is correct</returns>
     public async Task<(bool, User?)> CheckLoginValid(User model)
     {
-        User? entity = await Read(model.Username);
+        User? entity = await ReadByUsername(model.Username);
         bool isValid = entity != null && BCrypt.Net.BCrypt.Verify(model.Password, entity.Password);
         return (isValid, entity);
     }

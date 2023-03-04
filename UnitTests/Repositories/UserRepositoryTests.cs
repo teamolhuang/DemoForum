@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using DemoForum.Models.Entities;
 using DemoForum.Repositories;
-using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace DemoForumTests.Repositories;
@@ -54,9 +53,28 @@ public class UserRepositoryTests : InMemoryDbSetup
     }
 
     [Test]
+    [TestCase(1, "Babby", "12345678")]
+    [TestCase(151, "Pikachu", "111000999")]
+    public async Task Read_WillQueryDb_AndReturnFoundEntity(int id, string username, string password)
+    {
+        // Arrange
+        IUserRepository userRepository = Arrange_Repo(ForumContext);
+        User input = Arrange_UserObject(id, username, password);
+        Arrange_EnsureExistingAsOnlyOneInDb(ForumContext, input);
+        
+        // Act
+        User? actual = await userRepository.Read(id);
+
+        // Assert
+        Assert.IsNotNull(actual);
+        Assert.AreEqual(input.Username, actual!.Username);
+        Assert.IsTrue(BCrypt.Net.BCrypt.Verify(input.Password, actual.Password));
+    }
+    
+    [Test]
     [TestCase("Babby", "12345678")]
     [TestCase("Pikachu", "111000999")]
-    public async Task Read_WillQueryDb_AndReturnFoundEntity(string username, string password)
+    public async Task ReadByUsername_WillQueryDb_AndReturnFoundEntity(string username, string password)
     {
         // Arrange
         IUserRepository userRepository = Arrange_Repo(ForumContext);
@@ -64,7 +82,7 @@ public class UserRepositoryTests : InMemoryDbSetup
         Arrange_EnsureExistingAsOnlyOneInDb(ForumContext, input);
         
         // Act
-        User? actual = await userRepository.Read(username);
+        User? actual = await userRepository.ReadByUsername(username);
 
         // Assert
         Assert.IsNotNull(actual);
@@ -133,6 +151,18 @@ public class UserRepositoryTests : InMemoryDbSetup
     {
         User input = new()
         {
+            Username = username,
+            Password = password,
+            Version = ExtensionMethods.GetNowTimestamp()
+        };
+        return input;
+    }
+    
+    private static User Arrange_UserObject(int id, string username, string password)
+    {
+        User input = new()
+        {
+            Id = id,
             Username = username,
             Password = password,
             Version = ExtensionMethods.GetNowTimestamp()
