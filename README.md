@@ -1,15 +1,25 @@
 # DemoForum
 ---
 
-試用連結
+### Demo 連結
+
 http://ec2-18-180-93-247.ap-northeast-1.compute.amazonaws.com/
+
+---
+
+### 簡介
 
 ---
 
 一個 ASP.NET Core MVC 做的論壇專案。開發用的 DB 為 MS SQL Server。
 因主要開發項目為後端，前端介面為簡單的 CSS + cshtml。
 
-# 展示內容
+---
+
+### 展示內容
+
+---
+
 1. CRUD
   - 註冊與登入
   - 發表、修改、刪除文章
