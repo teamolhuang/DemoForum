@@ -51,7 +51,7 @@
         <p class="post-info">最後修改時間：@(Model.UpdatedTime)</p>
     }
     <hr/>
-    <h5>@Model.Content</h5>
+    <span style="white-space: pre-wrap"><h5>@Model.Content</h5></span>
     <hr/>
         @await Html.PartialAsync("..\\Comment\\_CommentInput", new CommentInputViewModel
         {
