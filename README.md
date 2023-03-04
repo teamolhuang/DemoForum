@@ -9,16 +9,12 @@ http://ec2-18-180-93-247.ap-northeast-1.compute.amazonaws.com/
 
 ### 簡介
 
----
-
 一個 ASP.NET Core MVC 做的論壇專案。開發用的 DB 為 MS SQL Server。
 因主要開發項目為後端，前端介面為簡單的 CSS + cshtml。
 
 ---
 
 ### 展示內容
-
----
 
 1. CRUD
   - 註冊與登入
@@ -34,7 +30,10 @@ http://ec2-18-180-93-247.ap-northeast-1.compute.amazonaws.com/
   - Entity Framework Core (EF7)
   - LINQ 語法實現 Repositories
 
-# AWS
+---
+
+### 開發及 AWS 流程
+
 1. 程式專案、DB 在本地開發並測試。
 2. 開發完後，各自打包成 image。
 3. 撰寫 Docker-Compose。
