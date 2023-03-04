@@ -1,3 +1,4 @@
+![image](https://user-images.githubusercontent.com/82561200/222894826-8f168c78-477a-428e-9af5-7076851f5ceb.png)
 # DemoForum
 ---
 
@@ -44,7 +45,6 @@ http://ec2-18-180-93-247.ap-northeast-1.compute.amazonaws.com/
 ---
 
 ### 一些截圖
-![image](https://user-images.githubusercontent.com/82561200/222894826-8f168c78-477a-428e-9af5-7076851f5ceb.png)
 ![image](https://user-images.githubusercontent.com/82561200/222894835-32222a0b-4c77-460d-b1a4-d3139ccd79d0.png)
 ![image](https://user-images.githubusercontent.com/82561200/222894845-e3ded71b-d14f-41f4-88f5-436859b79c78.png)
 
