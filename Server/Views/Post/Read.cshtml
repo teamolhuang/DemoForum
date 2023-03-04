@@ -44,11 +44,11 @@
     }
     
     <h2 class="post-title" legend>@Model!.Title</h2>
-    <p class="post-info">作者：@(Model.AuthorName)</p>
-    <br/><p class="post-info">發表時間：@(Model.CreatedTime)</p>
+    <p class="post-info" style="margin-right: 6px">作者：@(Model.AuthorName)</p>
+    <p class="post-info" style="margin-right: 6px">發表時間：@(Model.CreatedTime)</p>
     @if (Model.UpdatedTime != null)
     {
-        <br/><p class="post-info">最後修改時間：@(Model.UpdatedTime)</p>
+        <p class="post-info">最後修改時間：@(Model.UpdatedTime)</p>
     }
     <hr/>
     <h5>@Model.Content</h5>
