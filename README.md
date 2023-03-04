@@ -55,3 +55,4 @@ http://ec2-18-180-93-247.ap-northeast-1.compute.amazonaws.com/
 1. 完成 CI/CD 流程
 2. 完成推文數顯示
 3. 完成使用者暱稱、頭像設定
+4. 補足註解
