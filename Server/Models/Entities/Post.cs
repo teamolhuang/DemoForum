@@ -16,6 +16,8 @@ public partial class Post
 
     public DateTime? UpdatedTime { get; set; }
 
+    public int CommentScore { get; set; }
+
     public virtual User Author { get; set; } = null!;
 
     public virtual ICollection<Comment> Comments { get; } = new List<Comment>();

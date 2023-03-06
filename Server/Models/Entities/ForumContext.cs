@@ -39,8 +39,7 @@ public partial class ForumContext : DbContext
 
             entity.HasIndex(e => new { e.PostId, e.CreatedTime }, "Comment_PostId_CreatedTime_index");
 
-            entity.Property(e => e.Content)
-                .HasMaxLength(100);
+            entity.Property(e => e.Content).HasMaxLength(100);
             entity.Property(e => e.CreatedTime).HasColumnType("datetime");
             entity.Property(e => e.Type)
                 .HasMaxLength(1)
@@ -50,7 +49,6 @@ public partial class ForumContext : DbContext
 
             entity.HasOne(d => d.Author).WithMany(p => p.Comments)
                 .HasForeignKey(d => d.AuthorId)
-                .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("Comment_User_Id_fk");
 
             entity.HasOne(d => d.Post).WithMany(p => p.Comments)
