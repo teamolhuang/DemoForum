@@ -64,9 +64,10 @@
         PostId = Model.Id
     })
     <hr/>
+    <p class="post info">評價：@Model.CommentScore</p>
+    <hr/>
     @if (hasComment)
     {
-        
         int counter = 0;
         foreach (CommentViewModel c in Model.CommentViews!)
         {
@@ -74,6 +75,10 @@
             @await Html.PartialAsync("..\\Comment\\_Comment", c)
             <hr/>
         }
+    }
+    else
+    {
+        <p>還沒有推文！趕快來搶一樓吧！</p>
     }
     <form method="get">
         <button type="submit" asp-action="Index" asp-controller="Home">回首頁</button>

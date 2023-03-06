@@ -1,4 +1,5 @@
-﻿using AspNetCoreHero.ToastNotification.Abstractions;
+﻿using System.Transactions;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using DemoForum.Enums;
 using DemoForum.Models;
 using DemoForum.Models.Entities;
@@ -69,18 +70,38 @@ public class CommentController : Controller
             return RedirectToAction("Logout", "User");
         }
 
-        Comment comment = new()
+        // 綁定在同一個 TransactionScope, 保證推文紀錄的一致性
+        using (TransactionScope tx = new(TransactionScopeAsyncFlowOption.Enabled))
         {
-            AuthorId = user.Id,
-            Author = user,
-            PostId = post.Id,
-            Post = post,
-            Content = viewModel.CommentContent!,
-            CreatedTime = DateTime.Now,
-            Type = mode.GetDbEnum()
-        };
+            try
+            {
 
-        await _commentRepository.Create(comment);
+                // 更新 CommentScore
+                post.CommentScore += mode.GetCommentScore();
+                await _postRepository.Update(post.Id, post);
+
+                // 寫入 Comment
+                Comment comment = new()
+                {
+                    AuthorId = user.Id,
+                    Author = user,
+                    PostId = post.Id,
+                    Post = post,
+                    Content = viewModel.CommentContent!,
+                    CreatedTime = DateTime.Now,
+                    Type = mode.GetDbEnum()
+                };
+
+                await _commentRepository.Create(comment);
+                tx.Complete();
+
+            }
+            catch (Exception e)
+            {
+                _notyf.Error("網站忙碌中，請稍後重試 ...");
+                return RedirectToAction("Read", "Post", new {Id = viewModel.PostId});
+            }
+        }
 
         _notyf.Success("推文成功！");
         return RedirectToAction("Read", "Post", new {Id = viewModel.PostId});

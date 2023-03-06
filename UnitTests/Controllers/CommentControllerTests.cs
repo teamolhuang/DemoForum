@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNetCoreHero.ToastNotification.Abstractions;
@@ -26,7 +27,7 @@ public class CommentControllerTests
     [TestCase(CommentMode.Push)]
     [TestCase(CommentMode.Boo)]
     [TestCase(CommentMode.Natural)]
-    public async Task PostComment_WillCheckViewModelIdIsNotNullAndPostExists_AndReturnToReadViewWithSuccessMessage(CommentMode mode)
+    public async Task PostComment_WillCheckViewModelIdIsNotNullAndPostExistsAndUpdateCommentScore_AndReturnToReadViewWithSuccessMessage(CommentMode mode)
     {
         // Arrange
         Mock<ICommentRepository> mockCommentRepo = Arrange_MockCommentRepository();
@@ -40,12 +41,16 @@ public class CommentControllerTests
             , mockNotyf
             , mockHttpContext);
 
+        User mockUser = Arrange_MockUser();
+        Arrange_HttpContextReturnsUserClaims(mockHttpContext, mockUser);
+        
         Post mockPost = Arrange_MockPost();
         PostComment_Arrange_MockRepoRead(mockPostRepo, mockPost);
 
-        User mockUser = Arrange_MockUser();
-        Arrange_HttpContextReturnsUserClaims(mockHttpContext, mockUser);
-        mockUserRepo.Setup(m => m.Read(MockUserId)).ReturnsAsync(mockUser);
+        Post mockUpdatedPost = Arrange_MockPost();
+        mockUpdatedPost.CommentScore += mode.GetCommentScore();
+        PostComment_Arrange_MockPostRepoUpdate(mockPostRepo, mockUpdatedPost);
+        PostComment_Arrange_MockUserRepoRead(mockUserRepo, mockUser);
 
         CommentInputViewModel mockCommentInputView = Arrange_CommentInputView();
 
@@ -64,6 +69,18 @@ public class CommentControllerTests
         PostComment_Assert_CommentIsCreated(mockCommentRepo, mockCommentInputView, mockUser);
         Assert_Notyf_SuccessAtLeastOnce(mockNotyf);
         PostComment_Assert_RedirectedToReadAndHasPostId(actual, mockCommentInputView);
+    }
+
+    private static void PostComment_Arrange_MockPostRepoUpdate(Mock<IPostRepository> mockPostRepo, Post mockUpdatedPost)
+    {
+        mockPostRepo
+            .Setup(m => m.Update(mockUpdatedPost.Id, GetUpdatedPostComparer(mockUpdatedPost)))
+            .ReturnsAsync(mockUpdatedPost);
+    }
+
+    private static void PostComment_Arrange_MockUserRepoRead(Mock<IUserRepository> mockUserRepo, User mockUser)
+    {
+        mockUserRepo.Setup(m => m.Read(MockUserId)).ReturnsAsync(mockUser);
     }
 
     private static User Arrange_MockUser()
@@ -221,6 +238,99 @@ public class CommentControllerTests
         mockCommentRepo.VerifyNoOtherCalls();
         Assert_Notyf_ErrorAtLeastOnce(mockNotyf);
         PostComment_Assert_RedirectedToLogout(actual);
+    }
+    
+    [Test]
+    [TestCase(CommentMode.Push, true, false)]
+    [TestCase(CommentMode.Boo, true, false)]
+    [TestCase(CommentMode.Natural, true, false)]
+    [TestCase(CommentMode.Push, false, true)]
+    [TestCase(CommentMode.Boo, false, true)]
+    [TestCase(CommentMode.Natural, false, true)]
+    public async Task PostComment_WillRollBackTransactionIfTransactionFails_AndReturnToReadViewWithSuccessMessage(
+        CommentMode mode
+        , bool postUpdateSuccess
+        , bool commentCreateSuccess)
+    {
+        // Arrange
+        Mock<ICommentRepository> mockCommentRepo = Arrange_MockCommentRepository();
+        Mock<IPostRepository> mockPostRepo = Arrange_MockPostRepository();
+        Mock<IUserRepository> mockUserRepo = Arrange_MockUserRepo();
+        Mock<INotyfService> mockNotyf = Arrange_MockNotyf();
+        Mock<HttpContext> mockHttpContext = Arrange_MockHttpContext();
+        CommentController controller = Arrange_ControllerInjectedHttpContext(mockCommentRepo
+            , mockPostRepo
+            , mockUserRepo
+            , mockNotyf
+            , mockHttpContext);
+
+        User mockUser = Arrange_MockUser();
+        Arrange_HttpContextReturnsUserClaims(mockHttpContext, mockUser);
+        PostComment_Arrange_MockUserRepoRead(mockUserRepo, mockUser);
+
+        Post mockPost = Arrange_MockPost();
+        PostComment_Arrange_MockRepoRead(mockPostRepo, mockPost);
+
+        Post mockUpdatedPost = Arrange_MockPost();
+        mockUpdatedPost.CommentScore += mode.GetCommentScore();
+
+        if (postUpdateSuccess)
+        {
+            PostComment_Arrange_MockPostRepoUpdate(mockPostRepo, mockUpdatedPost);
+        }
+        else
+        {
+            PostComment_Arrange_MockPostRepoThrows(mockPostRepo, mockUpdatedPost);
+        }
+
+        if (commentCreateSuccess)
+        {
+            mockCommentRepo.Setup(m => m.Create(It.IsAny<Comment>()))
+                .ReturnsAsync((Comment c) => c);
+        }
+        else
+        {
+            PostComment_Arrange_MockCommentRepoThrows(mockCommentRepo);
+        }
+        
+        CommentInputViewModel mockCommentInputView = Arrange_CommentInputView();
+
+        // Act
+
+        IActionResult actual = mode switch
+        {
+            CommentMode.Push => await controller.Push(mockCommentInputView),
+            CommentMode.Boo => await controller.Boo(mockCommentInputView),
+            CommentMode.Natural => await controller.Natural(mockCommentInputView),
+            _ => throw new ArgumentException()
+        };
+
+        // Assert
+        mockPostRepo.VerifyAll();
+        if (postUpdateSuccess)
+            mockCommentRepo.VerifyAll();
+        Assert_Notyf_ErrorAtLeastOnce(mockNotyf);
+        RedirectToActionResult redirect = actual.AssertAsRedirectToActionResult("Read", "Post");
+        Assert.IsTrue(redirect.RouteValues!.Contains(new KeyValuePair<string, object?>("Id", mockCommentInputView.PostId)));
+    }
+
+    private static void PostComment_Arrange_MockCommentRepoThrows(Mock<ICommentRepository> mockCommentRepo)
+    {
+        mockCommentRepo.Setup(m => m.Create(It.IsAny<Comment>()))
+            .Throws<Exception>();
+    }
+
+    private static void PostComment_Arrange_MockPostRepoThrows(Mock<IPostRepository> mockPostRepo, Post mockUpdatedPost)
+    {
+        mockPostRepo.Setup(m => m.Update(mockUpdatedPost.Id
+                , GetUpdatedPostComparer(mockUpdatedPost)))
+            .Throws<Exception>();
+    }
+
+    private static Post GetUpdatedPostComparer(Post mockUpdatedPost)
+    {
+        return It.Is<Post>(p => p.Id == mockUpdatedPost.Id 
+                                && p.CommentScore == mockUpdatedPost.CommentScore);
     }
 
     private static void PostComment_Assert_RedirectedToIndex(IActionResult actual)

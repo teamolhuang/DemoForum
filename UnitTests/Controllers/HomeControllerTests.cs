@@ -114,6 +114,7 @@ public class HomeControllerTests
         {
             Assert.True(json.Contains(post.Id.ToString().PadLeft(7, '0')));
             Assert.True(json.Contains(post.CreatedTime.ToString(CultureInfo.CurrentCulture)));
+            Assert.True(json.Contains(post.CommentScore.ToString()));
         }
     }
 
@@ -131,6 +132,7 @@ public class HomeControllerTests
 
     private static List<Post> Index_Arrange_GetListOfPosts(string mockTitle1, string mockTitle2)
     {
+        Random commentScore = new();
         return new List<Post>
         {
             new()
@@ -140,7 +142,8 @@ public class HomeControllerTests
                 Content = MockContentLong,
                 CreatedTime = DateTime.Now + TimeSpan.FromHours(1),
                 AuthorId = 1,
-                Author = Arrange_MockUser(1, MockUsername, MockUserPassword)
+                Author = Arrange_MockUser(1, MockUsername, MockUserPassword),
+                CommentScore = commentScore.Next()
             },
             new()
             {
@@ -149,7 +152,8 @@ public class HomeControllerTests
                 Content = MockContentShort,
                 CreatedTime = DateTime.Now,
                 AuthorId = 2,
-                Author = Arrange_MockUser(2, MockUsername, MockUserPassword)
+                Author = Arrange_MockUser(2, MockUsername, MockUserPassword),
+                CommentScore = commentScore.Next()
             }
         };
     }

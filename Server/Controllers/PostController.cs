@@ -156,7 +156,8 @@ public class PostController : Controller
                 Content = c.Content,
                 CreatedTime = c.CreatedTime.ToString(CultureInfo.CurrentCulture)
             })
-                .OrderBy(cv => cv.CreatedTime)
+                .OrderBy(cv => cv.CreatedTime),
+            CommentScore = post.CommentScore
         };
 
         ViewResult view = View(postViewModel);

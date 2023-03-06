@@ -37,7 +37,7 @@
                 // (作者) (文章 id - 時間)
                 // 標題
                 // 預覽
-                <p class="post-info" style="margin-right: 12px">@(post.AuthorName ?? "無作者資訊")</p><p class="post-info">#@post.Id - @post.CreatedTime</p>
+                <p class="post-info" style="margin-right: 12px">@(post.AuthorName ?? "無作者資訊")</p><p class="post-info" style="margin-right: 12px">#@post.Id - @post.CreatedTime</p><p class="post-info">評價：@(post.CommentScore ?? 0)</p>
                 <h2 style="position: relative; top: -5px;"><a class="post-title">@Html.ActionLink(post.Title ?? "無題", "Read", "Post", new {post.Id})</a></h2>
                 <h6>@post.Content</h6>
                 <hr/>

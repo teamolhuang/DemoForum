@@ -24,6 +24,7 @@ public class PostControllerTests
     private const string MockPostContent = "MockContent";
     private const string MockPostTitleChanged = "The Title is changed!";
     private const string MockPostContentChanged = "A whole new content!";
+    private const int MockPostCommentScore = 65535;
 
     private const int MockSid = 645;
     private const string MockNameIdentifier = "MockUsername";
@@ -31,7 +32,7 @@ public class PostControllerTests
     private const string MockUsername = "MockUsername";
     private const string MockUserPassword = "MockPassword";
     private const int MockUserId = 1;
-
+    
     private const string MockCommentContent = "This is a mock comment!";
     
     [Test]
@@ -545,6 +546,7 @@ public class PostControllerTests
         Assert.NotNull(mockPost.UpdatedTime);
         DateTime updatedTime = (DateTime)mockPost.UpdatedTime!;
         Assert.AreEqual(updatedTime.ToString(CultureInfo.CurrentCulture), viewModel.UpdatedTime);
+        Assert.AreEqual(mockPost.CommentScore, viewModel.CommentScore);
         
         // TODO figure out a way to test CommentViews
     }
@@ -559,7 +561,8 @@ public class PostControllerTests
             CreatedTime = DateTime.Now,
             UpdatedTime = DateTime.Now + TimeSpan.FromDays(1),
             Author = Arrange_User(MockUserId, MockUsername, MockUserPassword),
-            AuthorId = MockUserId
+            AuthorId = MockUserId,
+            CommentScore = MockPostCommentScore
         };
     }
     

@@ -32,7 +32,8 @@ public class HomeController : Controller
                     Title = p.Title.ShortenToPreviewDefault(),
                     Content = p.Content.ShortenToPreviewDefault(40),
                     CreatedTime = p.CreatedTime.ToString(CultureInfo.CurrentCulture),
-                    AuthorName = p.Author.Username
+                    AuthorName = p.Author.Username,
+                    CommentScore = p.CommentScore
                 })
         };
 

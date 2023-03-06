@@ -39,4 +39,14 @@ public static class CommentModeHelper
     {
         return Enum.GetName(mode)?.ToLower() ?? "natural";
     }
+
+    public static int GetCommentScore(this CommentMode mode)
+    {
+        return mode switch
+        {
+            CommentMode.Push => 1,
+            CommentMode.Boo => -1,
+            _ => 0
+        };
+    }
 }
