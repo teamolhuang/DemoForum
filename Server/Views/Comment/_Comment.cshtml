@@ -1,11 +1,12 @@
-﻿@model CommentViewModel
+﻿@using DemoForum.Utils
+@model CommentViewModel
 
 <div class="comment" style="display: flex; justify-content: space-between">
     <div class="comment-name-and-content" style="align-content: flex-start">
         <p class="post-info comment-mode-@Model.CommentModeCssSuffix" style="margin-right: 3px">@Model.CommentModeChinese</p>
         <p class="post-info" style="margin-right: 3px">@Model.Floor 樓</p>
         <p class="post-info">@Model.Username</p><br/>
-        @Model.Content<br/>
+        @Html.Raw(LinkifyHelper.Linkify(Model.Content!))<br/>
     </div>
     <div class="comment-time" style="align-content: flex-end">
         <p class="post-info">@Model.CreatedTime</p>

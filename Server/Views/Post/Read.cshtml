@@ -1,5 +1,6 @@
 ﻿@using Microsoft.IdentityModel.Tokens
 @using System.Security.Claims
+@using DemoForum.Utils
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model PostViewModel?
 
@@ -51,17 +52,17 @@
         <p class="post-info">最後修改時間：@(Model.UpdatedTime)</p>
     }
     <hr/>
-    <span style="white-space: pre-wrap"><h5>@Model.Content</h5></span>
+    <span style="white-space: pre-wrap"><h5>@Html.Raw(LinkifyHelper.Linkify(Model.Content!))</h5></span>
     <hr/>
-        @await Html.PartialAsync("..\\Comment\\_CommentInput", new CommentInputViewModel
-        {
-            PushChinese = pushChinese,
-            BooChinese = booChinese,
-            NaturalChinese = naturalChinese,
-            IsUserAuthor = isByUser,
-            IsLogon = isLogon,
-            PostId = Model.Id
-        })
+    @await Html.PartialAsync("..\\Comment\\_CommentInput", new CommentInputViewModel
+    {
+        PushChinese = pushChinese,
+        BooChinese = booChinese,
+        NaturalChinese = naturalChinese,
+        IsUserAuthor = isByUser,
+        IsLogon = isLogon,
+        PostId = Model.Id
+    })
     <hr/>
     @if (hasComment)
     {
