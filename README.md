@@ -33,7 +33,18 @@ http://ec2-18-180-93-247.ap-northeast-1.compute.amazonaws.com/
 
 ---
 
-### 開發及 AWS 流程
+### 現行 CI/CD 流程
+
+1. 程式專案 commit
+2. GitHub Actions 執行
+    - Unit Tests
+    - 打包 image
+    - 推到 ECR
+3. EC2 Watchtower 自動監測 ECR 並做 Container 下上
+
+---
+
+### 最初的開發流程
 
 1. 程式專案、DB 在本地開發並測試。
 2. 開發完後，各自打包成 image。
@@ -52,9 +63,9 @@ http://ec2-18-180-93-247.ap-northeast-1.compute.amazonaws.com/
 
 ### 課題
 
-1. 完成 CI/CD 流程
+1. ~~完成 CI/CD 流程~~
 2. 完成推文數顯示
-3. 完成內文超連結 href
+3. ~~完成內文超連結 href~~
 4. 完成修改推文功能
 5. 完成使用者暱稱、頭像設定
 6. 補足註解
