@@ -1,3 +1,4 @@
+![image](https://user-images.githubusercontent.com/82561200/222894826-8f168c78-477a-428e-9af5-7076851f5ceb.png)
 # DemoForum
 ---
 
@@ -40,3 +41,20 @@ http://ec2-18-180-93-247.ap-northeast-1.compute.amazonaws.com/
 4. 在 AWS 上建置 EC2、ECR，並利用 IAM 讓 Docker 能順利登入。
 5. ECR 建置私有庫，從本地 push images。
 6. 在 EC2 實例上 pull images 之後執行 Docker-Compose。
+
+---
+
+### 一些截圖
+![image](https://user-images.githubusercontent.com/82561200/222894835-32222a0b-4c77-460d-b1a4-d3139ccd79d0.png)
+![image](https://user-images.githubusercontent.com/82561200/222894845-e3ded71b-d14f-41f4-88f5-436859b79c78.png)
+
+---
+
+### 課題
+
+1. 完成 CI/CD 流程
+2. 完成推文數顯示
+3. 完成內文超連結 href
+4. 完成修改推文功能
+5. 完成使用者暱稱、頭像設定
+6. 補足註解
