@@ -4,6 +4,7 @@ using DemoForum.Models.Entities;
 using DemoForum.Repositories;
 using DemoForum.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +55,13 @@ builder.Services.AddAntiforgery(options =>
     options.Cookie.Name = Consts.AntiForgeryCookie;
     options.HeaderName = Consts.AntiForgeryCookieHeader;
 });
+
+// Sustains cookie keys so that users don't need to re-login whenever container is down.
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo("/key/storage"));
+}
 
 WebApplication app = builder.Build();
 
