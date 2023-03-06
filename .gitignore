@@ -8,6 +8,3 @@ Secrets/
 Properties/
 appsettings.Development.json
 *.DotSettings
-
-# Excludes unit test bin so GitHub Actions can run it
-!UnitTests/bin/
