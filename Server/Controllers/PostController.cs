@@ -167,7 +167,7 @@ public class PostController : Controller
         
         return view;
     }
-
+    
     public async Task<IActionResult> ReadFromDeletePostConfirmation(DeletePostConfirmationViewModel model)
     {
         if (model.PostId == null)
@@ -178,7 +178,9 @@ public class PostController : Controller
         
         IActionResult result 
             = await Read((int)model.PostId);
-        return result;
+        ViewResult viewResult = (ViewResult)result;
+        
+        return View("Read", viewResult.Model);
     }
 
     [HttpPost]

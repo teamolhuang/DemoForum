@@ -311,7 +311,7 @@ public class PostControllerTests
 
         // Assert
         Assert_PostRepository_ReadOnce(mockPost.Id, mockRepo);
-        PostViewModel postViewModel = actual.AssertAsViewResult()
+        PostViewModel postViewModel = actual.AssertAsViewResult("Read")
             .AssertAsViewModel<PostViewModel>();
         Assert_Read_ResultIsSameAsEntity(MockPostTitle, MockPostContent, postViewModel, mockPost);
     }
