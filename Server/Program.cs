@@ -57,6 +57,11 @@ builder.Services.AddAntiforgery(options =>
     options.HeaderName = Consts.AntiForgeryCookieHeader;
 });
 
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.RedirectStatusCode = (int)HttpStatusCode.PermanentRedirect;
+});
+
 // Sustains cookie keys so that users don't need to re-login whenever container is down.
 if (!builder.Environment.IsDevelopment())
 {
@@ -75,6 +80,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+
+app.UseHttpsRedirection();
 
 app.UseRouting();
 
