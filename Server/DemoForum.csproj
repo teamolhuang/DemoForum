@@ -74,7 +74,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="wwwroot\.well-known\pki-validation\B93643B8882C17124A16C0C66CCF6AFB.txt" />
+        <_ContentIncludedByDefault Remove="wwwroot\.well-known\pki-validation\B93643B8882C17124A16C0C66CCF6AFB.txt" />
+      <Content Include="wwwroot\.well-known\pki-validation\B93643B8882C17124A16C0C66CCF6AFB.txt">
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>
