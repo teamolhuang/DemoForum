@@ -74,7 +74,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="wwwroot\.well-known\pki-validation\B93643B8882C17124A16C0C66CCF6AFB.txt" />
+      <Folder Include="wwwroot\.well-known\" />
     </ItemGroup>
 
 </Project>
