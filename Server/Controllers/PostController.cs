@@ -146,15 +146,15 @@ public class PostController : Controller
             Id = post.Id,
             Title = post.Title,
             Content = post.Content,
-            CreatedTime = post.CreatedTime.ToString(CultureInfo.CurrentCulture),
+            CreatedTime = post.CreatedTime.ToStringForView(),
             AuthorName = post.Author.Username,
-            UpdatedTime = post.UpdatedTime?.ToString(CultureInfo.CurrentCulture),
+            UpdatedTime = post.UpdatedTime?.ToStringForView(),
             CommentViews = post.Comments.Select(c => new CommentViewModel
             {
                 CommentMode = CommentModeHelper.ByDbType(c.Type),
                 Username = c.Author.Username,
                 Content = c.Content,
-                CreatedTime = c.CreatedTime.ToString(CultureInfo.CurrentCulture)
+                CreatedTime = c.CreatedTime.ToStringForView()
             })
                 .OrderBy(cv => cv.CreatedTime),
             CommentScore = post.CommentScore

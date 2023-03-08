@@ -113,7 +113,7 @@ public class HomeControllerTests
         foreach (Post post in posts)
         {
             Assert.True(json.Contains(post.Id.ToString().PadLeft(7, '0')));
-            Assert.True(json.Contains(post.CreatedTime.ToString(CultureInfo.CurrentCulture)));
+            Assert.True(json.Contains(post.CreatedTime.ToStringForView()));
             Assert.True(json.Contains(post.CommentScore.ToString()));
         }
     }

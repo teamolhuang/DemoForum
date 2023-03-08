@@ -9,6 +9,7 @@ using DemoForum.Enums;
 using DemoForum.Models;
 using DemoForum.Models.Entities;
 using DemoForum.Repositories;
+using DemoForum.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -542,10 +543,10 @@ public class PostControllerTests
     {
         Assert.AreEqual(title, viewModel.Title);
         Assert.AreEqual(content, viewModel.Content);
-        Assert.AreEqual(mockPost.CreatedTime.ToString(CultureInfo.CurrentCulture), viewModel.CreatedTime);
+        Assert.AreEqual(mockPost.CreatedTime.ToStringForView(), viewModel.CreatedTime);
         Assert.NotNull(mockPost.UpdatedTime);
         DateTime updatedTime = (DateTime)mockPost.UpdatedTime!;
-        Assert.AreEqual(updatedTime.ToString(CultureInfo.CurrentCulture), viewModel.UpdatedTime);
+        Assert.AreEqual(updatedTime.ToStringForView(), viewModel.UpdatedTime);
         Assert.AreEqual(mockPost.CommentScore, viewModel.CommentScore);
         
         // TODO figure out a way to test CommentViews
