@@ -64,16 +64,6 @@ if (!builder.Environment.IsDevelopment())
         .PersistKeysToFileSystem(new DirectoryInfo("/key/storage"));
 }
 
-// HTTPS
-if (!builder.Environment.IsDevelopment())
-{
-    builder.Services.AddHttpsRedirection(options =>
-    {
-        options.RedirectStatusCode = (int)HttpStatusCode.PermanentRedirect;
-        options.HttpsPort = 443;
-    });
-}
-
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -84,8 +74,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
