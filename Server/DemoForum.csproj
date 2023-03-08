@@ -71,11 +71,10 @@
       <_ContentIncludedByDefault Remove="wwwroot\js\linkifyjs\linkify.js" />
       <_ContentIncludedByDefault Remove="wwwroot\js\linkifyjs\linkify.min.js" />
       <_ContentIncludedByDefault Remove="wwwroot\js\linkifyjs\simple-html-tokenizer\LICENSE" />
-        <_ContentIncludedByDefault Remove="wwwroot\.well-known\pki-validation\B93643B8882C17124A16C0C66CCF6AFB.txt" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="wwwroot\.well-known\pki-validation\B93643B8882C17124A16C0C66CCF6AFB.txt" />
+      <Content Update="wwwroot\.well-known\pki-validation\B93643B8882C17124A16C0C66CCF6AFB.txt" />
     </ItemGroup>
 
 </Project>
