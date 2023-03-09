@@ -55,14 +55,14 @@
     <span style="white-space: pre-wrap"><h5>@Html.Raw(LinkifyHelper.Linkify(Model.Content!))</h5></span>
     <hr/>
     @await Html.PartialAsync("..\\Comment\\_CommentInput", new CommentInputViewModel
-    {
-        PushChinese = pushChinese,
-        BooChinese = booChinese,
-        NaturalChinese = naturalChinese,
-        IsUserAuthor = isByUser,
-        IsLogon = isLogon,
-        PostId = Model.Id
-    })
+        {
+            PushChinese = pushChinese,
+            BooChinese = booChinese,
+            NaturalChinese = naturalChinese,
+            IsUserAuthor = isByUser,
+            IsLogon = isLogon,
+            PostId = Model.Id
+        })
     <hr/>
     <p class="post info">評價：@Model.CommentScore</p>
     <hr/>

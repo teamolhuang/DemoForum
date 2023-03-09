@@ -12,7 +12,9 @@
         <form asp-controller="Comment" method="post">
             @Html.AntiForgeryToken()
             @Html.HiddenFor(m => m.PostId)
-            <input type="text" style="margin-bottom: 5px" asp-for="CommentContent" size="140" minlength="1" maxlength="100" placeholder="輸入推文內容（1 ~ 100 字）..." required/><br/>
+            <!-- really weird, the general css width 100% doesn't work here... -->
+            <!-- manually setting a min width for now, as the input gets too small without it -->
+            <input type="text" style="margin-bottom: 5px; min-width: 300px;" asp-for="CommentContent" minlength="1" maxlength="100" placeholder="輸入推文內容（1 ~ 100 字）..." required/><br/>
             @if (!Model.IsUserAuthor ?? false)
             {
                 // 自己的文章只允許箭頭

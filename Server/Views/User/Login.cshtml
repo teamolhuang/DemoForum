@@ -14,10 +14,10 @@
     <hr/>
 
     <h5 style="display: inline">帳號</h5> @Html.ValidationMessageFor(m => m.Username)<br/>
-    <input type="text" asp-for="Username" size="40" minlength="2" maxlength="12" pattern="^[A-z0-9]+$" placeholder="輸入帳號（2 ~ 12 個英數字） ..."/><br/>
+    <input type="text" asp-for="Username" minlength="2" maxlength="12" pattern="^[A-z0-9]+$" placeholder="輸入帳號（2 ~ 12 個英數字） ..."/><br/>
 
     <h5 style="display: inline">密碼</h5> @Html.ValidationMessageFor(m => m.Password)<br/>
-    <input type="password" asp-for="Password" size="40" minlength="8" maxlength="20" pattern="^[A-z0-9_%$!#]+$" placeholder="輸入密碼（8 ~ 20 個英數字、_%$!#符號） ..."/>
+    <input type="password" asp-for="Password" minlength="8" maxlength="20" pattern="^[A-z0-9_%$!#]+$" placeholder="輸入密碼（8 ~ 20 個英數字、_%$!#符號） ..."/>
 
     <hr/>
 
