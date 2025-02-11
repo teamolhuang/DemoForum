@@ -1,0 +1,13 @@
+﻿services:
+  demo-forum:
+    container_name: demo-forum
+    image: teamolhuang/demo-forum:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./coords-to-tw-city-vol:/app/db
+    ports:
+      # 在 container 中 (api) 使用預設的 8080
+      # 在 host 預設使用 32002 
+      - "32001:8080"

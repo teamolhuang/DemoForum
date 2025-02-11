@@ -6,6 +6,7 @@ using DemoForum.Repositories;
 using DemoForum.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +14,14 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Add dbcontext
-// This also reads connection strings from dotnet user-secret automatically,
-// thus no need for actually configuring it into the project
-builder.Services.AddDbContext<ForumContext>();
+// ensure db subfolder exists. we want to put the db file there.
+
+Directory.CreateDirectory("db");
+
+builder.Services.AddDbContext<ForumContext>(options =>
+{
+    options.UseSqlite("./db/database.db");
+});
 
 // Adds toast notification
 builder.Services.AddNotyf(config =>
