@@ -4,7 +4,7 @@
 
 ### 簡介
 
-一個 ASP.NET Core MVC 做的論壇專案。開發用的 DB 為 MS SQL Server。
+一個 ASP.NET Core MVC 做的論壇專案。
 因主要開發項目為後端，前端介面為簡單的 CSS + cshtml。
 
 ---
@@ -30,6 +30,12 @@
 4. ORM
     - Entity Framework Core
     - LINQ 語法實現 Repositories
+5. CI/CD
+    - （僅第一次）透過與專案共同提供的 Docker-Compose 建置
+    - 透過 GitHub Runner 執行包 Docker Image, 推上 Docker Hub
+    - 伺服器透過 Watchtower 自動檢查更新
+6. 網路架構
+    - 利用 Cloudflare Tunnel 對外開放，避免另外需要開防火牆，同時保持了設定彈性
 
 ---
 
