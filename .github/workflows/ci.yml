@@ -32,7 +32,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag teamolhuang/demo-forum:$(date +%s)
+        run: docker build . --file Server/Dockerfile --tag teamolhuang/demo-forum:$(date +%s)
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
