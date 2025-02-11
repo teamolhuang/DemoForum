@@ -196,8 +196,7 @@ public class PostRepositoryTests : InMemoryDbSetup
                 Content = DateTime.Now.Ticks.ToString(),
                 CreatedTime = DateTime.Now,
                 AuthorId = 1 + i,
-                Author = Arrange_MockUser(1 + i, MockUsername),
-                Version = ExtensionMethods.GetNowTimestamp()
+                Author = Arrange_MockUser(1 + i, MockUsername)
             });
         }
 
@@ -210,8 +209,7 @@ public class PostRepositoryTests : InMemoryDbSetup
         {
             Id = mockUserId,
             Username = mockUsername,
-            Password = MockUserPassword,
-            Version = ExtensionMethods.GetNowTimestamp()
+            Password = MockUserPassword
         };
     }
 
@@ -241,7 +239,6 @@ public class PostRepositoryTests : InMemoryDbSetup
             Content = TestContent,
             AuthorId = 1,
             Author = Arrange_MockUser(1, MockUsername),
-            Version = ExtensionMethods.GetNowTimestamp(),
             CreatedTime = DateTime.Now
         };
         return post;
@@ -256,7 +253,6 @@ public class PostRepositoryTests : InMemoryDbSetup
             Content = TestContentChanged,
             AuthorId = 1,
             Author = Arrange_MockUser(1, MockUsername),
-            Version = ExtensionMethods.GetNowTimestamp(),
             UpdatedTime = DateTime.Now
         };
         return post;

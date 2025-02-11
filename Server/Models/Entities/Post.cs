@@ -12,8 +12,6 @@ public partial class Post
 
     public int AuthorId { get; set; }
 
-    public byte[] Version { get; set; } = null!;
-
     public DateTime? UpdatedTime { get; set; }
 
     public int CommentScore { get; set; }
