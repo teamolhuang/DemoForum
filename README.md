@@ -2,12 +2,6 @@
 # DemoForum
 ---
 
-### Demo 連結
-
-http://ec2-18-180-93-247.ap-northeast-1.compute.amazonaws.com/
-
----
-
 ### 簡介
 
 一個 ASP.NET Core MVC 做的論壇專案。開發用的 DB 為 MS SQL Server。
@@ -30,17 +24,6 @@ http://ec2-18-180-93-247.ap-northeast-1.compute.amazonaws.com/
 4. ORM
     - Entity Framework Core (EF7)
     - LINQ 語法實現 Repositories
-
----
-
-### 現行 CI/CD 流程
-
-1. 程式專案 commit
-2. GitHub Actions 執行
-    - Unit Tests
-    - 打包 image
-    - 推到 ECR
-3. EC2 Watchtower 自動監測 ECR 並做 Container 下上
 
 ---
 
