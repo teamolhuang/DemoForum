@@ -20,7 +20,7 @@ Directory.CreateDirectory("db");
 
 builder.Services.AddDbContext<ForumContext>(options =>
 {
-    options.UseSqlite("./db/database.db");
+    options.UseSqlite("Data Source=./db/database.db");
 });
 
 // Adds toast notification
@@ -76,6 +76,11 @@ if (!builder.Environment.IsDevelopment())
 }
 
 WebApplication app = builder.Build();
+        
+// 先確保已建立並更新 db
+await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+await using ForumContext db = scope.ServiceProvider.GetRequiredService<ForumContext>();
+await db.Database.MigrateAsync();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler("/Home/Error");

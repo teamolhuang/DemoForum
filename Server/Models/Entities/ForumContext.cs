@@ -19,12 +19,6 @@ public partial class ForumContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-            optionsBuilder.UseSqlServer("Name=ConnectionStrings:DemoForum");
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("forum");
@@ -97,9 +91,5 @@ public partial class ForumContext : DbContext
                 .IsRowVersion()
                 .IsConcurrencyToken();
         });
-
-        OnModelCreatingPartial(modelBuilder);
     }
-
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

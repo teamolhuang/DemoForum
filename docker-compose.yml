@@ -6,7 +6,7 @@
       context: .
       dockerfile: Server/Dockerfile
     volumes:
-      - ./coords-to-tw-city-vol:/app/db
+      - ./demo-forum-vol:/app/db
     ports:
       # 在 container 中 (api) 使用預設的 80
       # 在 host 預設使用 32002 

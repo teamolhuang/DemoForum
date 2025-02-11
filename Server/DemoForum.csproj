@@ -13,13 +13,12 @@
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.14" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.3">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.36">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.36" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.3">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.36">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -34,6 +33,19 @@
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+      <Content Remove="db\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="db\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="db\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="db\**" />
     </ItemGroup>
 
 </Project>
