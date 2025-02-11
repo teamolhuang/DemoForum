@@ -4,7 +4,7 @@
     image: teamolhuang/demo-forum:latest
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Server/Dockerfile
     volumes:
       - ./coords-to-tw-city-vol:/app/db
     ports:
