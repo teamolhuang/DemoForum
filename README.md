@@ -9,6 +9,12 @@
 
 ---
 
+### Demo 網頁
+
+可以在[這裡試玩看看](https://demo-forum.teamol-developing.net)。
+
+---
+
 ### 展示內容
 
 1. CRUD
@@ -22,19 +28,8 @@
     - Moq
     - In-Memory DB
 4. ORM
-    - Entity Framework Core (EF7)
+    - Entity Framework Core
     - LINQ 語法實現 Repositories
-
----
-
-### 最初的開發流程
-
-1. 程式專案、DB 在本地開發並測試。
-2. 開發完後，各自打包成 image。
-3. 撰寫 Docker-Compose。
-4. 在 AWS 上建置 EC2、ECR，並利用 IAM 讓 Docker 能順利登入。
-5. ECR 建置私有庫，從本地 push images。
-6. 在 EC2 實例上 pull images 之後執行 Docker-Compose。
 
 ---
 
