@@ -1,7 +1,7 @@
 ﻿services:
   demo-forum:
     container_name: demo-forum
-    image: teamolhuang/demo-forum:latest
+    image: teamolhuang/demo-forum:master
     build:
       context: .
       dockerfile: Server/Dockerfile
