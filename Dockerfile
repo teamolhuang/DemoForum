@@ -19,6 +19,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-COPY ["/wwwroot/.well-known/pki-validation/B93643B8882C17124A16C0C66CCF6AFB.txt", "wwwroot/.well-known/pki-validation/"]
-
 ENTRYPOINT ["dotnet", "DemoForum.dll"]
