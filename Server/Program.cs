@@ -7,6 +7,7 @@ using DemoForum.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,10 @@ Directory.CreateDirectory("db");
 builder.Services.AddDbContext<ForumContext>(options =>
 {
     options.UseSqlite("Data Source=./db/database.db");
+    options.ConfigureWarnings(warnings =>
+    {
+        warnings.Ignore(RelationalEventId.AmbientTransactionWarning);
+    });
 });
 
 // Adds toast notification
