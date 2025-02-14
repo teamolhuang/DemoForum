@@ -10,11 +10,11 @@ COPY ["Server/DemoForum.csproj", "Server/"]
 RUN dotnet restore "Server/DemoForum.csproj"
 COPY . .
 WORKDIR "/src/Server"
-RUN dotnet build "DemoForum.csproj" -c $BUILD_CONFIGURATION -o /app/build -r linux-arm64
+RUN dotnet build "DemoForum.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "DemoForum.csproj" -c $BUILD_CONFIGURATION -o /app/publish -r linux-arm64 /p:UseAppHost=true
+RUN dotnet publish "DemoForum.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=true
 
 FROM base AS final
 WORKDIR /app
