@@ -14,7 +14,7 @@ RUN dotnet build "DemoForum.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "DemoForum.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "DemoForum.csproj" -c $BUILD_CONFIGURATION -o /app/publish -r linux-arm64 /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
